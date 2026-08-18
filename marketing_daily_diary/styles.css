@@ -762,6 +762,12 @@ h1 {
   --red: #f5a3bb;
   --blue: #b7d7ff;
   --shadow: none;
+  --brand-primary: #0f408f;
+  --brand-primary-light: #defc8e;
+  --brand-secondary: #ef7148;
+  --brand-secondary-light: #bde4ff;
+  --brand-tertiary: #89adff;
+  --brand-tertiary-light: #f7f3ed;
 }
 html {
   font-size: 10px;
@@ -825,7 +831,7 @@ h2 {
 }
 .date-panel {
   border: 1px solid #d9d9d9;
-  background: #faf4df;
+  background: var(--brand-tertiary-light);
 }
 .metrics {
   border: 0;
@@ -860,8 +866,8 @@ h2 {
 .filter.is-active,
 .view-button.is-active,
 .date-tab.is-active {
-  background: #ffe66d;
-  box-shadow: inset 0 -8px 0 rgba(245, 163, 187, 0.45);
+  background: var(--brand-primary-light);
+  box-shadow: inset 0 -8px 0 rgba(239, 113, 72, 0.35);
 }
 .task-form input,
 .task-form select,
@@ -878,7 +884,7 @@ h2 {
 .memo-check-form button,
 .meeting-check-form button {
   border-radius: 0;
-  background: #202124;
+  background: var(--brand-primary);
   color: #fff;
 }
 .task-item,
@@ -946,8 +952,8 @@ h2 {
   background-image: none;
 }
 .day-card.is-today {
-  border-color: #202124;
-  background: #fff8c7;
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-light);
   box-shadow: none;
 }
 .day-card.is-muted {
@@ -1141,8 +1147,8 @@ h2 {
   cursor: pointer;
 }
 .monthly-tab.is-active {
-  background: #ffe66d;
-  box-shadow: inset 0 -4px 0 #ffd0a6;
+  background: var(--brand-primary-light);
+  box-shadow: inset 0 -4px 0 var(--brand-secondary);
 }
 .monthly-progress-list {
   display: grid;
@@ -1238,8 +1244,8 @@ body {
   border-left: 1px solid #d9d9d9;
 }
 .monthly-tab.is-active {
-  background: #ffe66d;
-  box-shadow: inset 0 -4px 0 #ffd0a6;
+  background: var(--brand-primary-light);
+  box-shadow: inset 0 -4px 0 var(--brand-secondary);
 }
 .month-check {
   display: none;
@@ -1277,7 +1283,7 @@ body {
 .scratch-note-delete {
   min-height: 36px;
   border: 1px solid #202124;
-  background: #202124;
+  background: var(--brand-primary);
   color: #fff;
   padding: 0 14px;
   font-weight: 900;
@@ -1335,23 +1341,23 @@ body {
   align-items: center;
   width: fit-content;
   margin-top: 12px;
-  border: 1px solid #202124;
-  background: #ffe66d;
-  color: #202124;
+  border: 1px solid var(--brand-secondary);
+  background: var(--brand-secondary);
+  color: #fff;
   padding: 8px 14px;
   font-weight: 900;
   text-decoration: none;
 }
 .event-calendar-link:hover,
 .event-calendar-link:focus-visible {
-  background: #fff8c7;
+  background: #d75f37;
   outline: 2px solid #202124;
   outline-offset: 2px;
 }
 
 /* scratch-note-editing */
 .scratch-note-edit {
-  background: #fff8c7;
+  background: var(--brand-primary-light);
   color: #202124;
 }
 .scratch-note-actions .is-hidden {

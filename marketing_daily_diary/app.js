@@ -385,8 +385,10 @@ function setTaskFilter(filterName) {
 }
 
 function renderTasks() {
+  const todayKey = formatDateKey(baseToday);
   const visibleTasks = tasks.filter((task) => {
-    if (task.due !== selectedTaskDate) return false;
+    const isCarriedOver = selectedTaskDate === todayKey && task.due < todayKey && !task.done;
+    if (task.due !== selectedTaskDate && !isCarriedOver) return false;
     if (activeFilter === "todo") return !task.done;
     if (activeFilter === "risk") return task.priority === "high" || task.type === "risk";
     return true;
