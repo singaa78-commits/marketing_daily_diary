@@ -1,0 +1,118 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>업무 플래너</title>
+    <meta name="description" content="팀장의 일일 업무 체크리스트, 담당자별 진행 현황, 월간 및 주간 캘린더를 한 화면에서 관리하는 대시보드" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="topbar">
+        <section class="identity" aria-label="대시보드 소개">
+          <p class="eyebrow">Team Lead Calendar Board</p>
+          <h1>업무 플래너</h1>
+          <p class="subtitle">오늘 해야 할 일, 이번 주 일정, 월간 흐름과 막힌 업무를 한 화면에서 확인합니다.</p>
+        </section>
+        <section class="date-panel" aria-label="오늘 요약">
+          <span id="todayLabel">오늘</span>
+          <strong id="todayCount">0건</strong>
+          <small>오늘 마감 업무</small>
+        </section>
+      </header>
+
+      <section class="metrics" aria-label="업무 현황 요약">
+        <article class="metric"><span>완료율</span><strong id="completionRate">0%</strong><div class="meter"><span id="completionMeter"></span></div></article>
+        <article class="metric"><span>진행 중</span><strong id="activeCount">0</strong><small>담당자 확인 필요</small></article>
+        <article class="metric"><span>위험 업무</span><strong id="riskCount">0</strong><small>지연 또는 우선순위 높음</small></article>
+        <article class="metric"><span>회의 미체크</span><strong id="meetingCount">0</strong><small>확인 필요 항목</small></article>
+      </section>
+
+      <section class="workspace">
+        <section class="task-area" aria-label="업무 체크리스트">
+          <div class="section-head">
+            <div><p class="eyebrow">Checklist</p><h2>오늘의 업무</h2></div>
+            <div class="filters" role="group" aria-label="업무 필터">
+              <button class="filter is-active" data-filter="all">전체</button>
+              <button class="filter" data-filter="todo">미완료</button>
+              <button class="filter" data-filter="risk">위험</button>
+            </div>
+          </div>
+          <form id="taskForm" class="task-form" aria-label="업무 추가">
+            <input id="taskTitle" type="text" placeholder="새 업무 추가" required />
+            <select id="taskOwner" aria-label="담당자"><option>ME</option><option>이슬기</option><option>석정은</option><option>이경숙</option><option>박정연</option></select>
+            <select id="taskCategory" aria-label="업무 유형"><option value="message">이미지 제작 발송</option><option value="performance">성과 체크</option><option value="meta">메타광고</option><option value="influencer">인플루언서 협업</option><option value="content">콘텐츠 제작</option></select>
+            <select id="taskPriority" aria-label="우선순위"><option value="high">높음</option><option value="medium" selected>보통</option><option value="low">낮음</option></select>
+            <button type="submit">추가</button>
+          </form>
+          <div id="taskList" class="task-list" aria-live="polite"></div>
+        </section>
+
+                <aside class="side-panel" aria-label="체크리스트">
+          <section class="memo-check-panel side-checklist-panel" aria-label="체크리스트">
+            <div class="memo-check-head">
+              <div>
+                <p class="eyebrow">Checklist</p>
+                <h2>체크리스트</h2>
+              </div>
+            </div>
+            <form id="memoCheckForm" class="memo-check-form" aria-label="체크 항목 추가">
+              <input id="memoCheckText" type="text" placeholder="체크할 일 추가" required />
+              <select id="memoCheckWhen" aria-label="시점"><option value="">시점 미정</option><option>오늘</option><option>이번 주</option><option>다음 주</option><option>이번 달</option><option>다음 달</option></select>
+              <button type="submit">추가</button>
+            </form>
+            <ul id="memoCheckList" class="memo-check-list" aria-live="polite"></ul>
+          </section>
+        </aside>
+      </section>
+
+      <section class="calendar-area" aria-label="업무 캘린더">
+        <div class="section-head calendar-head">
+          <div><p class="eyebrow">Calendar</p><h2 id="calendarTitle">업무 캘린더</h2></div>
+          <div class="calendar-actions">
+            <div class="view-toggle" role="group" aria-label="캘린더 보기 선택">
+              <button class="view-button is-active" type="button" data-view="week">주간</button>
+              <button class="view-button" type="button" data-view="month">월간</button>
+            </div>
+            <div class="month-controls" aria-label="월 이동">
+              <button id="prevMonthButton" class="icon-button" type="button" aria-label="이전 달">‹</button>
+              <button id="todayButton" class="ghost-button" type="button">이번 달</button>
+              <button id="nextMonthButton" class="icon-button" type="button" aria-label="다음 달">›</button>
+            </div>
+            <button id="resetButton" class="ghost-button" type="button">빈 플래너로 초기화</button>
+          </div>
+        </div>
+        <form id="eventForm" class="event-form" aria-label="일정 추가">
+          <input id="eventTitle" type="text" placeholder="일정명" required />
+          <input id="eventDate" type="date" required />
+          <input id="eventTime" type="time" value="10:00" required />
+          <select id="eventKind" aria-label="일정 유형">
+            <option value="meeting">회의</option>
+            <option value="deadline">마감</option>
+            <option value="review">리뷰</option>
+          </select>
+          <button type="submit">일정 추가</button>
+        </form>        <div id="monthWeekdays" class="month-weekdays" aria-hidden="true"></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
