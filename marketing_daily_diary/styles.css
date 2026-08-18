@@ -1072,3 +1072,29 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+/* editable-calendar-events */
+.event {
+  cursor: pointer;
+}
+.event:focus-visible {
+  outline: 2px solid #202124;
+  outline-offset: 2px;
+}
+.event-form {
+  grid-template-columns: minmax(180px, 1fr) 140px 110px 110px 96px 72px;
+}
+.event-form.is-editing {
+  background: #fff8c7;
+  padding: 10px;
+  border: 1px solid #202124;
+}
+.event-form .is-hidden {
+  display: none;
+}
+@media (max-width: 980px) {
+  .event-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .event-form { grid-template-columns: 1fr; }
+}

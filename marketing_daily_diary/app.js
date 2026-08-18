@@ -41,6 +41,7 @@ let memoChecks = loadMemoChecks();
 
 let activeFilter = "all";
 let calendarView = "week";
+let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 
 const taskList = document.querySelector("#taskList");
@@ -53,6 +54,8 @@ const nextMonthButton = document.querySelector("#nextMonthButton");
 const todayButton = document.querySelector("#todayButton");
 const eventForm = document.querySelector("#eventForm");
 const eventDate = document.querySelector("#eventDate");
+const eventSubmitButton = document.querySelector("#eventSubmitButton");
+const eventCancelButton = document.querySelector("#eventCancelButton");
 const memoCheckForm = document.querySelector("#memoCheckForm");
 const memoCheckList = document.querySelector("#memoCheckList");
 const thisWeekList = document.querySelector("#thisWeekList");
@@ -269,7 +272,7 @@ function renderEvents(events, limit = 4) {
   return `${visible.map((event) => {
     const key = eventKey(event);
     const items = meetingChecklists[key] || [];
-    return `<div class="event ${event.kind}"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
+    return `<div class="event ${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
   }).join("")}${hiddenCount > 0 ? `<p class="empty">외 ${hiddenCount}건</p>` : ""}`;
 }
 
@@ -298,6 +301,31 @@ function activateCalendarView(view) {
   calendarView = view;
   viewButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.view === view));
   renderCalendar();
+}
+
+function startEditingEvent(eventId) {
+  const eventItem = calendarEvents.find((item) => (item.id || eventKey(item)) === eventId);
+  if (!eventItem) return;
+  editingEventId = eventId;
+  document.querySelector("#eventTitle").value = eventItem.title;
+  document.querySelector("#eventDate").value = eventItem.date;
+  document.querySelector("#eventTime").value = eventItem.time;
+  document.querySelector("#eventKind").value = eventItem.kind;
+  eventSubmitButton.textContent = "수정 저장";
+  eventCancelButton.classList.remove("is-hidden");
+  eventForm.classList.add("is-editing");
+  eventForm.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function resetEventForm(date = formatDateKey(baseToday)) {
+  editingEventId = null;
+  eventForm.reset();
+  document.querySelector("#eventDate").value = date;
+  document.querySelector("#eventTime").value = "10:00";
+  document.querySelector("#eventKind").value = "meeting";
+  eventSubmitButton.textContent = "일정 추가";
+  eventCancelButton.classList.add("is-hidden");
+  eventForm.classList.remove("is-editing");
 }
 
 
@@ -329,12 +357,24 @@ eventForm.addEventListener("submit", (event) => {
   const time = document.querySelector("#eventTime").value;
   const kind = document.querySelector("#eventKind").value;
   if (!title || !date || !time) return;
-  calendarEvents.push({ id: crypto.randomUUID(), date, time, title, kind });
+  if (editingEventId) {
+    const original = calendarEvents.find((eventItem) => (eventItem.id || eventKey(eventItem)) === editingEventId);
+    if (original) {
+      const oldKey = eventKey(original);
+      const nextId = original.id || crypto.randomUUID();
+      calendarEvents = calendarEvents.map((eventItem) => (eventItem.id || eventKey(eventItem)) === editingEventId ? { id: nextId, date, time, title, kind } : eventItem);
+      const newKey = eventKey({ date, time, title });
+      if (oldKey !== newKey && meetingChecklists[oldKey]) {
+        meetingChecklists[newKey] = meetingChecklists[oldKey];
+        delete meetingChecklists[oldKey];
+        saveMeetingChecklists();
+      }
+    }
+  } else {
+    calendarEvents.push({ id: crypto.randomUUID(), date, time, title, kind });
+  }
   saveCalendarEvents();
-  eventForm.reset();
-  document.querySelector("#eventDate").value = date;
-  document.querySelector("#eventTime").value = "10:00";
-  document.querySelector("#eventKind").value = "meeting";
+  resetEventForm(date);
   visibleMonth = new Date(`${date}T00:00:00`);
   activateCalendarView("month");
 });
@@ -368,6 +408,7 @@ document.querySelector("#calendarGrid").addEventListener("submit", (event) => {
 
 document.querySelector("#calendarGrid").addEventListener("click", (event) => {
   const eventRemove = event.target.closest("[data-event-delete]");
+  const eventEdit = event.target.closest("[data-event-edit]");
   const toggle = event.target.closest("[data-meeting-key]");
   const remove = event.target.closest("[data-meeting-delete]");
   if (eventRemove) {
@@ -378,6 +419,10 @@ document.querySelector("#calendarGrid").addEventListener("click", (event) => {
     saveCalendarEvents();
     saveMeetingChecklists();
     render();
+    return;
+  }
+  if (eventEdit && !event.target.closest("button, input, form")) {
+    startEditingEvent(eventEdit.dataset.eventEdit);
     return;
   }
   if (!toggle && !remove) return;
@@ -416,6 +461,16 @@ viewButtons.forEach((button) => button.addEventListener("click", () => activateC
 prevMonthButton.addEventListener("click", () => { visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1); activateCalendarView("month"); });
 nextMonthButton.addEventListener("click", () => { visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1); activateCalendarView("month"); });
 todayButton.addEventListener("click", () => { visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1); activateCalendarView("month"); });
-resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
+eventCancelButton.addEventListener("click", () => resetEventForm(document.querySelector("#eventDate").value || formatDateKey(baseToday)));
+
+document.querySelector("#calendarGrid").addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const eventEdit = event.target.closest("[data-event-edit]");
+  if (!eventEdit) return;
+  event.preventDefault();
+  startEditingEvent(eventEdit.dataset.eventEdit);
+});
+
+resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
 
 render();
