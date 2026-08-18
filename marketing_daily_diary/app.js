@@ -63,6 +63,7 @@ let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 let activeProgressMonth = null;
 let editingQuickNoteId = null;
+let lastLocalMutationAt = 0;
 
 const taskList = document.querySelector("#taskList");
 const taskForm = document.querySelector("#taskForm");
@@ -94,14 +95,14 @@ const scratchNoteList = document.querySelector("#scratchNoteList");
 
 
 
-function serializePlannerState() {
+function serializePlannerState(updatedAt = new Date().toISOString()) {
   return {
     tasks,
     calendarEvents,
     meetingChecklists,
     memoChecks,
     quickNotes,
-    updatedAt: new Date().toISOString()
+    updatedAt
   };
 }
 
@@ -110,6 +111,8 @@ function hasLocalPlannerState() {
 }
 
 function applyPlannerState(state) {
+  const remoteUpdatedAt = Date.parse(state.updatedAt || "");
+  if (remoteUpdatedAt && lastLocalMutationAt && remoteUpdatedAt < lastLocalMutationAt) return;
   isApplyingRemoteState = true;
   tasks = Array.isArray(state.tasks) ? state.tasks.map(normalizeTask) : [];
   calendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
@@ -127,7 +130,9 @@ function applyPlannerState(state) {
 
 function savePlannerState() {
   if (isApplyingRemoteState) return;
-  setDoc(plannerStateRef, serializePlannerState(), { merge: true }).catch((error) => {
+  const updatedAt = new Date().toISOString();
+  lastLocalMutationAt = Date.parse(updatedAt);
+  setDoc(plannerStateRef, serializePlannerState(updatedAt), { merge: true }).catch((error) => {
     console.warn("Firebase 저장 실패", error);
   });
 }
@@ -311,6 +316,11 @@ function renderQuickNotes() {
   `).join("");
   if (!quickNotes.length) scratchNoteList.innerHTML = `<li class="empty">아직 저장된 메모가 없습니다.</li>`;
 }
+function setTaskFilter(filterName) {
+  activeFilter = filterName;
+  filters.forEach((filter) => filter.classList.toggle("is-active", filter.dataset.filter === filterName));
+}
+
 function renderTasks() {
   const visibleTasks = tasks.filter((task) => {
     if (activeFilter === "todo") return !task.done;
@@ -593,6 +603,7 @@ taskForm.addEventListener("submit", (event) => {
   document.querySelector("#taskOwner").value = "ME";
   document.querySelector("#taskCategory").value = "message";
   document.querySelector("#taskPriority").value = "medium";
+  setTaskFilter("all");
   saveTasks();
   render();
 });
@@ -656,8 +667,7 @@ taskList.addEventListener("click", (event) => {
 
 filters.forEach((button) => {
   button.addEventListener("click", () => {
-    activeFilter = button.dataset.filter;
-    filters.forEach((filter) => filter.classList.toggle("is-active", filter === button));
+    setTaskFilter(button.dataset.filter);
     renderTasks();
   });
 });
