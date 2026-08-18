@@ -1206,3 +1206,32 @@ body {
 .monthly-tab.is-active .month-check {
   background: #b9e7a8;
 }
+
+/* monthly-toggle-selection */
+.monthly-progress-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 3px;
+  border: 1px solid #202124;
+  background: #fff;
+}
+.monthly-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  border: 0;
+  background: transparent;
+  padding: 8px 14px;
+}
+.monthly-tab + .monthly-tab {
+  border-left: 1px solid #d9d9d9;
+}
+.monthly-tab.is-active {
+  background: #ffe66d;
+  box-shadow: inset 0 -4px 0 #ffd0a6;
+}
+.month-check {
+  display: none;
+}

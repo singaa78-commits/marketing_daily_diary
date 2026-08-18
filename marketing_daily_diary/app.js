@@ -173,7 +173,7 @@ function renderMonthlyProgress() {
   if (monthlyProgressCurrent) monthlyProgressCurrent.textContent = `선택 월: ${formatMonthLabel(activeProgressMonth)}`;
   monthlyProgressTabs.innerHTML = months.map((month) => {
     const isActive = month === activeProgressMonth;
-    return `<button type="button" class="monthly-tab ${isActive ? "is-active" : ""}" data-progress-month="${month}" aria-pressed="${isActive}"><span class="month-check">${isActive ? "✓" : ""}</span>${formatMonthLabel(month)}</button>`;
+    return `<button type="button" class="monthly-tab ${isActive ? "is-active" : ""}" data-progress-month="${month}" aria-pressed="${isActive}">${formatMonthLabel(month)}</button>`;
   }).join("");
   const visibleItems = completedItems.filter((item) => (item.completedMonth || monthFromWhen(item.when) || baseMonth) === activeProgressMonth);
   monthlyProgressList.innerHTML = visibleItems.length ? visibleItems.map((item) => `<li><span class="progress-check">✓</span><strong>${item.text}</strong><small>${item.completedAt || item.when || "완료"}</small></li>`).join("") : `<li class="empty">해당 월에 완료 체크된 항목이 없습니다.</li>`;
