@@ -337,7 +337,6 @@ function renderTasks() {
           <span class="pill">${task.owner}</span>
           <span class="pill category ${task.category}">${categoryLabels[task.category] || categoryLabels.general}</span>
           <span class="pill ${task.priority}">${priorityLabels[task.priority]}</span>
-          <span class="pill">${task.due} 마감</span>
         </div>
         ${task.category === "influencer" ? renderInfluencerFlow(task) : ""}
       </div>
