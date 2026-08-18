@@ -69,6 +69,7 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 .pill.medium { background: rgba(199,121,22,0.12); color: var(--amber); }
 .pill.low { background: rgba(44,143,91,0.12); color: var(--green); }
 .pill.category { background: rgba(73,118,209,0.12); color: var(--blue); }
+.pill.overdue { background: rgba(201,77,69,0.1); color: var(--red); margin-left: 6px; font-size: 0.78rem; }
 .delete-button { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--muted); font-weight: 900; }
 .focus-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .focus-list li { padding: 12px; border-left: 4px solid var(--amber); border-radius: 6px; background: #fff8ed; color: #5c430f; font-weight: 700; }
@@ -901,6 +902,7 @@ h2 {
 .pill.high { background: #ffd8e6; color: #202124; }
 .pill.medium { background: #fff8c7; color: #202124; }
 .pill.low { background: #dff7eb; color: #202124; }
+.pill.overdue { background: #ffd8e6; color: #202124; }
 .check,
 .delete-button,
 .memo-toggle,

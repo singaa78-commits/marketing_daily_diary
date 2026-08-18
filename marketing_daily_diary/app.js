@@ -50,7 +50,8 @@ const categoryLabels = {
   content: "콘텐츠",
   general: "기타",
 };
-const baseToday = new Date(2026, 7, 18);
+const now = new Date();
+const baseToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 let calendarEvents = loadCalendarEvents();
 let tasks = loadTasks();
 let meetingChecklists = loadMeetingChecklists();
@@ -391,12 +392,7 @@ function renderTasks() {
     <article class="task-item ${task.done ? "is-done" : ""}">
       <button class="check" type="button" aria-label="${task.title} 완료 상태 변경" data-toggle="${task.id}">${task.done ? "✓" : ""}</button>
       <div>
-        <p class="task-title">${task.title}</p>
-        <div class="task-meta">
-          <span class="pill">${task.owner}</span>
-          <span class="pill category ${task.category}">${categoryLabels[task.category] || categoryLabels.general}</span>
-          <span class="pill ${task.priority}">${priorityLabels[task.priority]}</span>
-        </div>
+        <p class="task-title">${task.title}${task.due === "오늘" && task.createdDate && task.createdDate !== formatDateKey(baseToday) && !task.done ? ` <span class="pill overdue">지연</span>` : ""}</p>
         ${task.category === "influencer" ? renderInfluencerFlow(task) : ""}
       </div>
       <button class="delete-button" type="button" aria-label="${task.title} 삭제" data-delete="${task.id}">×</button>
@@ -649,7 +645,7 @@ taskForm.addEventListener("submit", (event) => {
   if (!title) return;
   const taskId = crypto.randomUUID();
   pendingTaskIds.add(taskId);
-  tasks.unshift(normalizeTask({ id: taskId, title, owner: document.querySelector("#taskOwner").value, priority: document.querySelector("#taskPriority").value, category, due: "오늘", done: false, type: "task" }));
+  tasks.unshift(normalizeTask({ id: taskId, title, owner: document.querySelector("#taskOwner").value, priority: document.querySelector("#taskPriority").value, category, due: "오늘", done: false, type: "task", createdDate: formatDateKey(baseToday) }));
   taskForm.reset();
   document.querySelector("#taskOwner").value = "ME";
   document.querySelector("#taskCategory").value = "message";
