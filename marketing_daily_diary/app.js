@@ -116,7 +116,7 @@ function saveTasks() {
 
 function render() {
   renderTasks();
-  renderMetrics();
+  renderTodaySummary();
   renderFocus();
   renderOwners();
   renderCalendar();
@@ -239,24 +239,11 @@ function getOpenMeetingChecks() {
   );
 }
 
-function renderMetrics() {
-  const total = tasks.length || 1;
-  const done = tasks.filter((task) => task.done).length;
-  const active = tasks.filter((task) => !task.done).length;
-  const risks = tasks.filter((task) => !task.done && (task.priority === "high" || task.type === "risk")).length;
+function renderTodaySummary() {
   const today = tasks.filter((task) => task.due === "오늘" && !task.done).length;
-  const meetings = getOpenMeetingChecks().length;
-  const rate = Math.round((done / total) * 100);
-
-  document.querySelector("#completionRate").textContent = `${rate}%`;
-  document.querySelector("#completionMeter").style.width = `${rate}%`;
-  document.querySelector("#activeCount").textContent = active;
-  document.querySelector("#riskCount").textContent = risks;
   document.querySelector("#todayCount").textContent = `${today}건`;
-  document.querySelector("#meetingCount").textContent = meetings;
   document.querySelector("#todayLabel").textContent = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(baseToday);
 }
-
 function renderFocus() {
   // The right panel is now a single editable checklist; unresolved items live there directly.
 }
