@@ -53,7 +53,7 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 .ghost-button { padding: 0 14px; border-color: var(--line); background: white; }
 .icon-button { width: 36px; border-color: var(--line); background: white; color: var(--ink); font-size: 1.35rem; line-height: 1; }
 .calendar-actions, .month-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-.task-form { display: grid; grid-template-columns: minmax(220px, 1fr) 120px 170px 110px 82px; gap: 8px; margin-bottom: 14px; }
+.task-form { display: grid; grid-template-columns: minmax(0, 1fr) 82px; gap: 8px; margin-bottom: 14px; }
 .task-form input, .task-form select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--ink); padding: 0 12px; }
 .task-form button { min-height: 42px; border: 0; border-radius: 6px; background: var(--teal); color: white; font-weight: 800; }
 .task-list { display: grid; gap: 10px; }
@@ -323,7 +323,7 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 }
 .memo-check-form {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) 140px 72px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 130px) minmax(0, 68px);
   gap: 8px;
 }
 .memo-check-form input,

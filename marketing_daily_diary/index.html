@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260818-3" />
+    <link rel="stylesheet" href="styles.css?v=20260818-4" />
   </head>
   <body>
     <main class="dashboard">
@@ -37,9 +37,6 @@
           </div>
           <form id="taskForm" class="task-form" aria-label="업무 추가">
             <input id="taskTitle" type="text" placeholder="새 업무 추가" required />
-            <select id="taskOwner" aria-label="담당자"><option>ME</option><option>이슬기</option><option>석정은</option><option>이경숙</option><option>박정연</option></select>
-            <select id="taskCategory" aria-label="업무 유형"><option value="message">마케팅메시지</option><option value="meta">메타광고</option><option value="performance">성과 체크</option><option value="influencer">인플루언서 협업</option><option value="content">콘텐츠</option><option value="general">기타</option></select>
-            <select id="taskPriority" aria-label="우선순위"><option value="high">높음</option><option value="medium" selected>보통</option><option value="low">낮음</option></select>
             <button type="submit">추가</button>
           </form>
           <div id="taskList" class="task-list" aria-live="polite"></div>
@@ -143,6 +140,6 @@
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260818-3"></script>
+    <script type="module" src="app.js?v=20260818-4"></script>
   </body>
 </html>

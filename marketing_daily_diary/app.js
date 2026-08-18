@@ -641,15 +641,11 @@ eventForm.addEventListener("submit", (event) => {
 taskForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const title = document.querySelector("#taskTitle").value.trim();
-  const category = document.querySelector("#taskCategory").value;
   if (!title) return;
   const taskId = crypto.randomUUID();
   pendingTaskIds.add(taskId);
-  tasks.unshift(normalizeTask({ id: taskId, title, owner: document.querySelector("#taskOwner").value, priority: document.querySelector("#taskPriority").value, category, due: "오늘", done: false, type: "task", createdDate: formatDateKey(baseToday) }));
+  tasks.unshift(normalizeTask({ id: taskId, title, owner: "ME", priority: "medium", category: "general", due: "오늘", done: false, type: "task", createdDate: formatDateKey(baseToday) }));
   taskForm.reset();
-  document.querySelector("#taskOwner").value = "ME";
-  document.querySelector("#taskCategory").value = "message";
-  document.querySelector("#taskPriority").value = "medium";
   setTaskFilter("all");
   saveTasks();
   render();
