@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260818-4" />
+    <link rel="stylesheet" href="styles.css?v=20260818-5" />
   </head>
   <body>
     <main class="dashboard">
@@ -28,12 +28,17 @@
       <section class="workspace">
         <section class="task-area" aria-label="업무 체크리스트">
           <div class="section-head">
-            <div><p class="eyebrow">Checklist</p><h2>오늘의 업무</h2></div>
+            <div><p class="eyebrow">Checklist</p><h2 id="taskDateLabel">오늘 할일</h2></div>
             <div class="filters" role="group" aria-label="업무 필터">
               <button class="filter is-active" data-filter="all">전체</button>
               <button class="filter" data-filter="todo">미완료</button>
               <button class="filter" data-filter="risk">위험</button>
             </div>
+          </div>
+          <div class="task-date-tabs" role="group" aria-label="날짜 선택">
+            <button class="date-tab is-active" type="button" data-date-tab="today">오늘 할일</button>
+            <button class="date-tab" type="button" data-date-tab="tomorrow">내일 할일</button>
+            <input id="taskDatePicker" type="date" aria-label="날짜로 보기" />
           </div>
           <form id="taskForm" class="task-form" aria-label="업무 추가">
             <input id="taskTitle" type="text" placeholder="새 업무 추가" required />
@@ -140,6 +145,6 @@
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260818-4"></script>
+    <script type="module" src="app.js?v=20260818-5"></script>
   </body>
 </html>

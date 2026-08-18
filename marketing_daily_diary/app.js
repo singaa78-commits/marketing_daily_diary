@@ -59,6 +59,7 @@ let memoChecks = loadMemoChecks();
 let quickNotes = loadQuickNotes();
 
 let activeFilter = "all";
+let selectedTaskDate = formatDateKey(baseToday);
 let calendarView = "week";
 let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
@@ -257,7 +258,8 @@ function createWorkflow() {
 function normalizeTask(task) {
   const category = task.category || "general";
   const workflow = category === "influencer" ? { ...createWorkflow(), ...(task.workflow || {}) } : task.workflow;
-  return { ...task, owner: ownerNameMap[task.owner] || task.owner, category, workflow };
+  const due = /^\d{4}-\d{2}-\d{2}$/.test(task.due || "") ? task.due : formatDateKey(baseToday);
+  return { ...task, due, owner: ownerNameMap[task.owner] || task.owner, category, workflow };
 }
 
 function loadTasks() {
@@ -272,6 +274,7 @@ function saveTasks() {
 
 function render() {
   renderTasks();
+  renderTaskDateTabs();
   renderTodaySummary();
   renderFocus();
   renderOwners();
@@ -383,6 +386,7 @@ function setTaskFilter(filterName) {
 
 function renderTasks() {
   const visibleTasks = tasks.filter((task) => {
+    if (task.due !== selectedTaskDate) return false;
     if (activeFilter === "todo") return !task.done;
     if (activeFilter === "risk") return task.priority === "high" || task.type === "risk";
     return true;
@@ -392,14 +396,29 @@ function renderTasks() {
     <article class="task-item ${task.done ? "is-done" : ""}">
       <button class="check" type="button" aria-label="${task.title} 완료 상태 변경" data-toggle="${task.id}">${task.done ? "✓" : ""}</button>
       <div>
-        <p class="task-title">${task.title}${task.due === "오늘" && task.createdDate && task.createdDate !== formatDateKey(baseToday) && !task.done ? ` <span class="pill overdue">지연</span>` : ""}</p>
+        <p class="task-title">${task.title}${!task.done && task.due < formatDateKey(baseToday) ? ` <span class="pill overdue">지연</span>` : ""}</p>
         ${task.category === "influencer" ? renderInfluencerFlow(task) : ""}
       </div>
       <button class="delete-button" type="button" aria-label="${task.title} 삭제" data-delete="${task.id}">×</button>
     </article>
   `).join("");
 
-  if (!visibleTasks.length) taskList.innerHTML = `<p class="empty">해당 조건의 업무가 없습니다.</p>`;
+  if (!visibleTasks.length) taskList.innerHTML = `<p class="empty">해당 날짜의 업무가 없습니다.</p>`;
+}
+
+function renderTaskDateTabs() {
+  const todayKey = formatDateKey(baseToday);
+  const tomorrowKey = formatDateKey(addDays(baseToday, 1));
+  document.querySelectorAll(".date-tab").forEach((button) => {
+    const key = button.dataset.dateTab === "today" ? todayKey : tomorrowKey;
+    button.classList.toggle("is-active", selectedTaskDate === key);
+  });
+  const picker = document.querySelector("#taskDatePicker");
+  if (document.activeElement !== picker) picker.value = selectedTaskDate;
+  const label = document.querySelector("#taskDateLabel");
+  if (selectedTaskDate === todayKey) label.textContent = "오늘 할일";
+  else if (selectedTaskDate === tomorrowKey) label.textContent = "내일 할일";
+  else label.textContent = `${formatShortDate(new Date(`${selectedTaskDate}T00:00:00`))} 할일`;
 }
 
 function renderInfluencerFlow(task) {
@@ -423,7 +442,7 @@ function getOpenMeetingChecks() {
 }
 
 function renderTodaySummary() {
-  const today = tasks.filter((task) => task.due === "오늘" && !task.done).length;
+  const today = tasks.filter((task) => task.due === formatDateKey(baseToday) && !task.done).length;
   document.querySelector("#todayCount").textContent = `${today}건`;
   document.querySelector("#todayLabel").textContent = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(baseToday);
 }
@@ -644,11 +663,25 @@ taskForm.addEventListener("submit", (event) => {
   if (!title) return;
   const taskId = crypto.randomUUID();
   pendingTaskIds.add(taskId);
-  tasks.unshift(normalizeTask({ id: taskId, title, owner: "ME", priority: "medium", category: "general", due: "오늘", done: false, type: "task", createdDate: formatDateKey(baseToday) }));
+  tasks.unshift(normalizeTask({ id: taskId, title, owner: "ME", priority: "medium", category: "general", due: selectedTaskDate, done: false, type: "task" }));
   taskForm.reset();
   setTaskFilter("all");
   saveTasks();
   render();
+});
+
+document.querySelectorAll(".date-tab").forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedTaskDate = button.dataset.dateTab === "today" ? formatDateKey(baseToday) : formatDateKey(addDays(baseToday, 1));
+    renderTasks();
+    renderTaskDateTabs();
+  });
+});
+document.querySelector("#taskDatePicker").addEventListener("change", (event) => {
+  if (!event.target.value) return;
+  selectedTaskDate = event.target.value;
+  renderTasks();
+  renderTaskDateTabs();
 });
 
 document.querySelector("#calendarGrid").addEventListener("click", (event) => {

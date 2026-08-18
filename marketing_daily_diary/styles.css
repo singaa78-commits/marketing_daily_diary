@@ -46,10 +46,12 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 .side-panel { display: grid; gap: 16px; }
 .section-head { display: flex; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .section-head.compact { margin-bottom: 12px; }
-.filters, .view-toggle { display: flex; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: #f2f5f9; }
-.filter, .ghost-button, .view-button, .icon-button { min-height: 36px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--muted); font-weight: 700; }
-.filter, .view-button { padding: 0 12px; }
-.filter.is-active, .view-button.is-active { background: white; color: var(--ink); box-shadow: 0 6px 14px rgba(38, 58, 84, 0.1); }
+.filters, .view-toggle, .task-date-tabs { display: flex; align-items: center; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: #f2f5f9; }
+.filter, .ghost-button, .view-button, .icon-button, .date-tab { min-height: 36px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--muted); font-weight: 700; }
+.filter, .view-button, .date-tab { padding: 0 12px; }
+.filter.is-active, .view-button.is-active, .date-tab.is-active { background: white; color: var(--ink); box-shadow: 0 6px 14px rgba(38, 58, 84, 0.1); }
+.task-date-tabs { width: fit-content; margin-bottom: 12px; }
+.task-date-tabs input[type="date"] { min-height: 32px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--ink); padding: 0 8px; font: inherit; }
 .ghost-button { padding: 0 14px; border-color: var(--line); background: white; }
 .icon-button { width: 36px; border-color: var(--line); background: white; color: var(--ink); font-size: 1.35rem; line-height: 1; }
 .calendar-actions, .month-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
@@ -529,12 +531,14 @@ h1 {
   padding-bottom: 8px;
 }
 .filters,
-.view-toggle {
+.view-toggle,
+.task-date-tabs {
   border-color: #aaa;
   background: transparent;
 }
 .filter.is-active,
-.view-button.is-active {
+.view-button.is-active,
+.date-tab.is-active {
   background: #fff4a8;
   box-shadow: inset 0 -10px 0 rgba(255, 231, 93, 0.5);
 }
@@ -839,7 +843,8 @@ h2 {
   border-bottom: 1px solid #202124;
 }
 .filters,
-.view-toggle {
+.view-toggle,
+.task-date-tabs {
   border: 1px solid #202124;
   border-radius: 0;
   background: #fff;
@@ -847,12 +852,14 @@ h2 {
 .filter,
 .view-button,
 .ghost-button,
-.icon-button {
+.icon-button,
+.date-tab {
   border-radius: 0;
   color: #202124;
 }
 .filter.is-active,
-.view-button.is-active {
+.view-button.is-active,
+.date-tab.is-active {
   background: #ffe66d;
   box-shadow: inset 0 -8px 0 rgba(245, 163, 187, 0.45);
 }
