@@ -152,24 +152,29 @@ function writeStoredJson(key, value) {
 }
 
 function applyPlannerState(state) {
-  const remoteUpdatedAt = Date.parse(state.updatedAt || "");
-  const remoteHasNoTasks = !Array.isArray(state.tasks) || state.tasks.length === 0;
-  const shouldPreserveLocal = (lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt)) || (remoteHasNoTasks && tasks.length > 0);
   isApplyingRemoteState = true;
   const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
   const remoteTaskIds = new Set(remoteTasks.map((task) => task.id));
-  const pendingTasks = tasks.filter((task) => pendingTaskIds.has(task.id) && !remoteTaskIds.has(task.id));
-  remoteTaskIds.forEach((taskId) => pendingTaskIds.delete(taskId));
+  const hasLocalOnlyTasks = tasks.some((task) => !remoteTaskIds.has(task.id));
+  pendingTaskIds.forEach((taskId) => { if (remoteTaskIds.has(taskId)) pendingTaskIds.delete(taskId); });
   const rawRemoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
   const remoteCalendarEvents = normalizeCalendarEvents(rawRemoteCalendarEvents);
   const didCleanRemoteCalendarEvents = rawRemoteCalendarEvents.length !== remoteCalendarEvents.length;
+  const remoteCalendarIds = new Set(remoteCalendarEvents.map((eventItem) => eventItem.id));
+  const hasLocalOnlyCalendarEvents = calendarEvents.some((eventItem) => !remoteCalendarIds.has(eventItem.id));
   const remoteMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  const remoteMemoIds = new Set(remoteMemoChecks.map((item) => item.id));
+  const hasLocalOnlyMemoChecks = memoChecks.some((item) => !remoteMemoIds.has(item.id));
   const remoteQuickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
-  tasks = mergeRecordsById(remoteTasks, shouldPreserveLocal ? tasks : pendingTasks, normalizeTask);
-  calendarEvents = shouldPreserveLocal ? mergeRecordsById(remoteCalendarEvents, normalizeCalendarEvents(calendarEvents)) : remoteCalendarEvents;
-  meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? { ...(shouldPreserveLocal ? meetingChecklists : {}), ...state.meetingChecklists } : (shouldPreserveLocal ? meetingChecklists : {});
-  memoChecks = shouldPreserveLocal ? mergeRecordsById(remoteMemoChecks, memoChecks) : remoteMemoChecks;
-  quickNotes = shouldPreserveLocal ? mergeRecordsById(remoteQuickNotes, quickNotes) : remoteQuickNotes;
+  const remoteNoteIds = new Set(remoteQuickNotes.map((item) => item.id));
+  const hasLocalOnlyQuickNotes = quickNotes.some((item) => !remoteNoteIds.has(item.id));
+  // Always union remote with local by id (local wins on conflict) instead of picking one wholesale,
+  // so a stale/incomplete remote snapshot can never silently wipe out local-only additions.
+  tasks = mergeRecordsById(remoteTasks, tasks, normalizeTask);
+  calendarEvents = mergeRecordsById(remoteCalendarEvents, normalizeCalendarEvents(calendarEvents));
+  meetingChecklists = { ...(state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {}), ...meetingChecklists };
+  memoChecks = mergeRecordsById(remoteMemoChecks, memoChecks);
+  quickNotes = mergeRecordsById(remoteQuickNotes, quickNotes);
   writeStoredJson("leaderDashboardTasks", tasks);
   calendarEvents = normalizeCalendarEvents(calendarEvents);
   writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
@@ -178,7 +183,9 @@ function applyPlannerState(state) {
   writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   render();
   isApplyingRemoteState = false;
-  if (shouldPreserveLocal || didCleanRemoteCalendarEvents || pendingTasks.length) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
+  if (hasLocalOnlyTasks || hasLocalOnlyCalendarEvents || hasLocalOnlyMemoChecks || hasLocalOnlyQuickNotes || didCleanRemoteCalendarEvents) {
+    setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
+  }
 }
 
 function savePlannerFields(fields) {
