@@ -96,9 +96,9 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 .month-view .event { margin-bottom: 6px; padding: 7px 8px; }
 .month-view .event strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.78rem; }
 .month-view .event span { font-size: 0.74rem; }
-.event.review { border-left-color: var(--teal); }
-.event.deadline { border-left-color: var(--red); }
-.event.meeting { border-left-color: var(--amber); }
+.event.kind-review { border-left-color: var(--teal); }
+.event.kind-deadline { border-left-color: var(--red); }
+.event.kind-meeting { border-left-color: var(--amber); }
 .empty { color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 980px) {
   .topbar, .workspace, .metrics { grid-template-columns: 1fr; }
@@ -944,9 +944,9 @@ h2 {
 .day-card.is-muted {
   background: #f7f7f7;
 }
-.event.meeting { border-left-color: #ffe66d; }
-.event.review { border-left-color: #9edfd0; }
-.event.deadline { border-left-color: #f5a3bb; }
+.event.kind-meeting { border-left-color: #ffe66d; }
+.event.kind-review { border-left-color: #9edfd0; }
+.event.kind-deadline { border-left-color: #f5a3bb; }
 .month-weekdays span,
 .day-name {
   color: #202124;
@@ -969,10 +969,10 @@ h2 {
 
 
 
-.event.check { border-left-color: #b7d7ff; }
-.event.schedule { border-left-color: #b9e7a8; }
-.event.deadline { border-left-color: #f5a3bb; }
-.event.meeting { border-left-color: #ffe66d; }
+.event.kind-check { border-left-color: #b7d7ff; }
+.event.kind-schedule { border-left-color: #b9e7a8; }
+.event.kind-deadline { border-left-color: #f5a3bb; }
+.event.kind-meeting { border-left-color: #ffe66d; }
 
 /* compact-meeting-checkbox */
 .meeting-check-item {
@@ -1444,11 +1444,7 @@ body {
   }
 }
 /* expandable-week-calendar-days */
-.calendar-grid.week-view {
-  align-items: start;
-}
 .calendar-grid.week-view .day-card {
-  height: auto;
   overflow: visible;
 }
 .calendar-grid.week-view .event {

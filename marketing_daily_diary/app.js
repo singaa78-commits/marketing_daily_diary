@@ -485,7 +485,7 @@ function renderEvents(events, limit = 4) {
   return `${visible.map((event) => {
     const key = eventKey(event);
     const items = meetingChecklists[key] || [];
-    return `<div class="event ${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
+    return `<div class="event kind-${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
   }).join("")}${hiddenCount > 0 ? `<p class="empty">외 ${hiddenCount}건</p>` : ""}`;
 }
 
