@@ -44,12 +44,12 @@ const eventKindLabels = {
   review: "리뷰",
 };
 const categoryLabels = {
-  message: "이미지 제작 발송",
+  message: "마케팅메시지",
   performance: "성과 체크",
   meta: "메타광고",
   influencer: "인플루언서 협업",
-  content: "콘텐츠 제작",
-  general: "일반 업무",
+  content: "콘텐츠",
+  general: "기타",
 };
 const baseToday = new Date(2026, 7, 18);
 let tasks = loadTasks();
