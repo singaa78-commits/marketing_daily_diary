@@ -1172,3 +1172,37 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+/* font-and-month-selection-update */
+html {
+  font-size: 12px;
+}
+body {
+  font-size: 1rem;
+}
+.monthly-progress-current {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid #202124;
+  background: #fff8c7;
+  font-weight: 900;
+}
+.monthly-tab {
+  display: inline-grid;
+  grid-template-columns: 18px auto;
+  align-items: center;
+  gap: 6px;
+}
+.month-check {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #202124;
+  background: #fff;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.monthly-tab.is-active .month-check {
+  background: #b9e7a8;
+}

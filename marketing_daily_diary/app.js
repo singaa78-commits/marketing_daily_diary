@@ -62,6 +62,7 @@ const memoCheckList = document.querySelector("#memoCheckList");
 const thisWeekList = document.querySelector("#thisWeekList");
 const nextWeekList = document.querySelector("#nextWeekList");
 const monthlyProgressTabs = document.querySelector("#monthlyProgressTabs");
+const monthlyProgressCurrent = document.querySelector("#monthlyProgressCurrent");
 const monthlyProgressList = document.querySelector("#monthlyProgressList");
 
 
@@ -169,7 +170,11 @@ function renderMonthlyProgress() {
   const nextMonth = formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1));
   const months = [...new Set([baseMonth, nextMonth, ...completedItems.map((item) => item.completedMonth || monthFromWhen(item.when) || baseMonth)])].sort();
   if (!activeProgressMonth || !months.includes(activeProgressMonth)) activeProgressMonth = baseMonth;
-  monthlyProgressTabs.innerHTML = months.map((month) => `<button type="button" class="monthly-tab ${month === activeProgressMonth ? "is-active" : ""}" data-progress-month="${month}">${formatMonthLabel(month)}</button>`).join("");
+  if (monthlyProgressCurrent) monthlyProgressCurrent.textContent = `선택 월: ${formatMonthLabel(activeProgressMonth)}`;
+  monthlyProgressTabs.innerHTML = months.map((month) => {
+    const isActive = month === activeProgressMonth;
+    return `<button type="button" class="monthly-tab ${isActive ? "is-active" : ""}" data-progress-month="${month}" aria-pressed="${isActive}"><span class="month-check">${isActive ? "✓" : ""}</span>${formatMonthLabel(month)}</button>`;
+  }).join("");
   const visibleItems = completedItems.filter((item) => (item.completedMonth || monthFromWhen(item.when) || baseMonth) === activeProgressMonth);
   monthlyProgressList.innerHTML = visibleItems.length ? visibleItems.map((item) => `<li><span class="progress-check">✓</span><strong>${item.text}</strong><small>${item.completedAt || item.when || "완료"}</small></li>`).join("") : `<li class="empty">해당 월에 완료 체크된 항목이 없습니다.</li>`;
 }
