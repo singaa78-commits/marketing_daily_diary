@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -50,24 +50,43 @@
             <button type="submit">추가</button>
           </form>
           <div id="taskList" class="task-list" aria-live="polite"></div>
-        </section>
 
-                <aside class="side-panel" aria-label="체크리스트">
-          <section class="memo-check-panel side-checklist-panel" aria-label="체크리스트">
-            <div class="memo-check-head">
-              <div>
-                <p class="eyebrow">Checklist</p>
-                <h2>체크리스트</h2>
+          <section class="task-support-grid" aria-label="체크리스트와 예정 할 일">
+            <section class="memo-check-panel task-checklist-panel" aria-label="체크리스트">
+              <div class="memo-check-head">
+                <div>
+                  <p class="eyebrow">Checklist</p>
+                  <h2>체크리스트</h2>
+                </div>
               </div>
-            </div>
-            <form id="memoCheckForm" class="memo-check-form" aria-label="체크 항목 추가">
-              <input id="memoCheckText" type="text" placeholder="체크할 일 추가" required />
-              <select id="memoCheckWhen" aria-label="시점"><option value="">시점 미정</option><option>오늘</option><option>이번 주</option><option>다음 주</option><option>이번 달</option><option>다음 달</option></select>
-              <button type="submit">추가</button>
-            </form>
-            <ul id="memoCheckList" class="memo-check-list" aria-live="polite"></ul>
+              <form id="memoCheckForm" class="memo-check-form" aria-label="체크 항목 추가">
+                <input id="memoCheckText" type="text" placeholder="체크할 일 추가" required />
+                <select id="memoCheckWhen" aria-label="시점"><option value="">시점 미정</option><option>오늘</option><option>이번 주</option><option>다음 주</option><option>이번 달</option><option>다음 달</option></select>
+                <button type="submit">추가</button>
+              </form>
+              <ul id="memoCheckList" class="memo-check-list" aria-live="polite"></ul>
+            </section>
+
+            <section class="upcoming-panel" aria-label="이번 주와 다음 주 할 일">
+              <div class="memo-check-head">
+                <div>
+                  <p class="eyebrow">Schedule</p>
+                  <h2>이번 주 / 다음 주 할 일</h2>
+                </div>
+              </div>
+              <div class="upcoming-columns">
+                <section>
+                  <h3>이번 주</h3>
+                  <ul id="thisWeekList" class="upcoming-list" aria-live="polite"></ul>
+                </section>
+                <section>
+                  <h3>다음 주</h3>
+                  <ul id="nextWeekList" class="upcoming-list" aria-live="polite"></ul>
+                </section>
+              </div>
+            </section>
           </section>
-        </aside>
+        </section>
       </section>
 
       <section class="calendar-area" aria-label="업무 캘린더">
@@ -104,17 +123,3 @@
     <script src="app.js"></script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-﻿const influencerSteps = [
+const influencerSteps = [
   { id: "listed", label: "리스트업" },
   { id: "meReview", label: "ME 체크" },
   { id: "contact", label: "컨택" },
@@ -55,6 +55,8 @@ const eventForm = document.querySelector("#eventForm");
 const eventDate = document.querySelector("#eventDate");
 const memoCheckForm = document.querySelector("#memoCheckForm");
 const memoCheckList = document.querySelector("#memoCheckList");
+const thisWeekList = document.querySelector("#thisWeekList");
+const nextWeekList = document.querySelector("#nextWeekList");
 
 
 
@@ -112,6 +114,7 @@ function render() {
   renderOwners();
   renderCalendar();
   renderMemoChecks();
+  renderUpcomingWork();
 }
 
 
@@ -127,6 +130,30 @@ function renderMemoChecks() {
   if (!memoChecks.length) memoCheckList.innerHTML = `<li class="empty">회의 때 나온 일정 체크 항목을 추가하세요.</li>`;
 }
 
+
+function renderUpcomingWork() {
+  const thisWeek = getEventsInRange(startOfWeek(baseToday), addDays(startOfWeek(baseToday), 6));
+  const nextWeekStart = addDays(startOfWeek(baseToday), 7);
+  const nextWeek = getEventsInRange(nextWeekStart, addDays(nextWeekStart, 6));
+  thisWeekList.innerHTML = renderUpcomingItems(thisWeek, "이번 주 등록된 일정이 없습니다.");
+  nextWeekList.innerHTML = renderUpcomingItems(nextWeek, "다음 주 등록된 일정이 없습니다.");
+}
+
+function renderUpcomingItems(events, emptyText) {
+  if (!events.length) return `<li class="empty">${emptyText}</li>`;
+  return events
+    .map((event) => `<li class="upcoming-item"><span class="upcoming-kind ${event.kind}">${eventKindLabels[event.kind] || "일정"}</span><strong>${event.title}</strong><small>${formatShortDate(new Date(`${event.date}T00:00:00`))} ${event.time}</small></li>`)
+    .join("");
+}
+
+function getEventsInRange(start, end) {
+  return calendarEvents
+    .filter((event) => {
+      const eventDate = new Date(`${event.date}T00:00:00`);
+      return eventDate >= start && eventDate <= end;
+    })
+    .sort((first, second) => `${first.date} ${first.time}`.localeCompare(`${second.date} ${second.time}`));
+}
 function renderTasks() {
   const visibleTasks = tasks.filter((task) => {
     if (activeFilter === "todo") return !task.done;
@@ -392,16 +419,3 @@ todayButton.addEventListener("click", () => { visibleMonth = new Date(baseToday.
 resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
 
 render();
-
-
-
-
-
-
-
-
-
-
-
-
-
