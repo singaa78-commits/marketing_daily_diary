@@ -972,3 +972,34 @@ h2 {
 .event.schedule { border-left-color: #b9e7a8; }
 .event.deadline { border-left-color: #f5a3bb; }
 .event.meeting { border-left-color: #ffe66d; }
+
+/* compact-meeting-checkbox */
+.meeting-check-item {
+  grid-template-columns: 1.1em minmax(0, 1fr) 1.4em;
+  min-height: 22px;
+  gap: 5px;
+  padding: 3px 0;
+  color: #2457a6;
+  font-weight: 800;
+}
+.mini-check,
+.mini-delete {
+  width: 1.1em;
+  height: 1.1em;
+  min-width: 1.1em;
+  min-height: 1.1em;
+  padding: 0;
+  font-size: 1em;
+  line-height: 1;
+}
+.mini-delete {
+  width: 1.4em;
+  min-width: 1.4em;
+  color: #7a7f8c;
+}
+.meeting-check-item span {
+  color: #2457a6;
+}
+.meeting-check-item.is-done span {
+  color: #8a8f99;
+}
