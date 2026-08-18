@@ -106,19 +106,29 @@ function serializePlannerState(updatedAt = new Date().toISOString()) {
   };
 }
 
+function mergeRecordsById(remoteItems, localItems, normalize = (item) => item) {
+  const merged = new Map();
+  remoteItems.forEach((item) => merged.set(item.id, normalize(item)));
+  localItems.forEach((item) => merged.set(item.id, normalize(item)));
+  return Array.from(merged.values());
+}
 function hasLocalPlannerState() {
   return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length;
 }
 
 function applyPlannerState(state) {
   const remoteUpdatedAt = Date.parse(state.updatedAt || "");
-  if (remoteUpdatedAt && lastLocalMutationAt && remoteUpdatedAt < lastLocalMutationAt) return;
+  const shouldPreserveLocal = lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt);
   isApplyingRemoteState = true;
-  tasks = Array.isArray(state.tasks) ? state.tasks.map(normalizeTask) : [];
-  calendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
-  meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {};
-  memoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
-  quickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
+  const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
+  const remoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
+  const remoteMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  const remoteQuickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
+  tasks = shouldPreserveLocal ? mergeRecordsById(remoteTasks, tasks, normalizeTask) : remoteTasks.map(normalizeTask);
+  calendarEvents = shouldPreserveLocal ? mergeRecordsById(remoteCalendarEvents, calendarEvents) : remoteCalendarEvents;
+  meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? { ...(shouldPreserveLocal ? meetingChecklists : {}), ...state.meetingChecklists } : (shouldPreserveLocal ? meetingChecklists : {});
+  memoChecks = shouldPreserveLocal ? mergeRecordsById(remoteMemoChecks, memoChecks) : remoteMemoChecks;
+  quickNotes = shouldPreserveLocal ? mergeRecordsById(remoteQuickNotes, quickNotes) : remoteQuickNotes;
   localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
   localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
   localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
@@ -126,6 +136,7 @@ function applyPlannerState(state) {
   localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
   render();
   isApplyingRemoteState = false;
+  if (shouldPreserveLocal) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
 }
 
 function savePlannerState() {
