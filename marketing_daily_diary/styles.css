@@ -1062,10 +1062,10 @@ h2 {
   font-size: 0.78rem;
   font-weight: 900;
 }
-.upcoming-kind.meeting { background: #ffe66d; }
-.upcoming-kind.check { background: #b7d7ff; }
-.upcoming-kind.schedule { background: #b9e7a8; }
-.upcoming-kind.deadline { background: #ffd8e6; }
+.upcoming-kind.kind-meeting { background: #ffe66d; }
+.upcoming-kind.kind-check { background: #b7d7ff; }
+.upcoming-kind.kind-schedule { background: #b9e7a8; }
+.upcoming-kind.kind-deadline { background: #ffd8e6; }
 @media (max-width: 980px) {
   .task-support-grid,
   .upcoming-columns {

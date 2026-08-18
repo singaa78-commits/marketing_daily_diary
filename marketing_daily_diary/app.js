@@ -306,7 +306,7 @@ function renderUpcomingWork() {
 function renderUpcomingItems(events, emptyText) {
   if (!events.length) return `<li class="empty">${emptyText}</li>`;
   return events
-    .map((event) => `<li class="upcoming-item"><span class="upcoming-kind ${event.kind}">${eventKindLabels[event.kind] || "일정"}</span><strong>${event.title}</strong><small>${formatShortDate(new Date(`${event.date}T00:00:00`))} ${event.time}</small></li>`)
+    .map((event) => `<li class="upcoming-item"><span class="upcoming-kind kind-${event.kind}">${eventKindLabels[event.kind] || "일정"}</span><strong>${event.title}</strong><small>${formatShortDate(new Date(`${event.date}T00:00:00`))} ${event.time}</small></li>`)
     .join("");
 }
 
@@ -484,21 +484,8 @@ function renderEvents(events, limit = 4) {
   const hiddenCount = events.length - visible.length;
   return `${visible.map((event) => {
     const key = eventKey(event);
-    const items = meetingChecklists[key] || [];
-    return `<div class="event kind-${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
+    return `<div class="event kind-${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div></div>`;
   }).join("")}${hiddenCount > 0 ? `<p class="empty">외 ${hiddenCount}건</p>` : ""}`;
-}
-
-function renderMeetingChecklist(key, items) {
-  return `
-    <form class="meeting-check-form" data-meeting-form="${key}">
-      <input type="text" placeholder="회의 체크 항목" aria-label="회의 체크 항목 추가" />
-      <button type="submit">추가</button>
-    </form>
-    <ul class="meeting-check-list">
-      ${items.map((item) => `<li class="meeting-check-item ${item.done ? "is-done" : ""}"><button class="mini-check" type="button" data-meeting-key="${key}" data-meeting-item="${item.id}">${item.done ? "✓" : ""}</button><span>${item.text}</span><button class="mini-delete" type="button" data-meeting-delete="${key}" data-meeting-item="${item.id}">×</button></li>`).join("")}
-    </ul>
-  `;
 }
 
 function eventKey(event) { return `${event.date}|${event.time}|${event.title}`; }
@@ -672,25 +659,9 @@ taskForm.addEventListener("submit", (event) => {
   render();
 });
 
-document.querySelector("#calendarGrid").addEventListener("submit", (event) => {
-  const form = event.target.closest("[data-meeting-form]");
-  if (!form) return;
-  event.preventDefault();
-  const input = form.querySelector("input");
-  const text = input.value.trim();
-  if (!text) return;
-  const key = form.dataset.meetingForm;
-  meetingChecklists[key] = [...(meetingChecklists[key] || []), { id: crypto.randomUUID(), text, done: false }];
-  input.value = "";
-  saveMeetingChecklists();
-  render();
-});
-
 document.querySelector("#calendarGrid").addEventListener("click", (event) => {
   const eventRemove = event.target.closest("[data-event-delete]");
   const eventEdit = event.target.closest("[data-event-edit]");
-  const toggle = event.target.closest("[data-meeting-key]");
-  const remove = event.target.closest("[data-meeting-delete]");
   if (eventRemove) {
     const eventId = eventRemove.dataset.eventDelete;
     const removed = calendarEvents.find((eventItem) => (eventItem.id || eventKey(eventItem)) === eventId);
@@ -705,13 +676,6 @@ document.querySelector("#calendarGrid").addEventListener("click", (event) => {
     startEditingEvent(eventEdit.dataset.eventEdit);
     return;
   }
-  if (!toggle && !remove) return;
-  const key = (toggle || remove).dataset.meetingKey || (toggle || remove).dataset.meetingDelete;
-  const itemId = (toggle || remove).dataset.meetingItem;
-  if (toggle) meetingChecklists[key] = (meetingChecklists[key] || []).map((item) => item.id === itemId ? { ...item, done: !item.done } : item);
-  if (remove) meetingChecklists[key] = (meetingChecklists[key] || []).filter((item) => item.id !== itemId);
-  saveMeetingChecklists();
-  render();
 });
 
 taskList.addEventListener("click", (event) => {
