@@ -106,6 +106,19 @@ function serializePlannerState(updatedAt = new Date().toISOString()) {
   };
 }
 
+function normalizeCalendarEvent(eventItem) {
+  if (!eventItem || typeof eventItem !== "object") return null;
+  const date = typeof eventItem.date === "string" ? eventItem.date : "";
+  const time = typeof eventItem.time === "string" ? eventItem.time : "";
+  const title = typeof eventItem.title === "string" ? eventItem.title.trim() : "";
+  const kind = eventKindLabels[eventItem.kind] ? eventItem.kind : "schedule";
+  if (!date || !time || !title) return null;
+  return { id: eventItem.id || crypto.randomUUID(), date, time, title, kind };
+}
+
+function normalizeCalendarEvents(items) {
+  return Array.isArray(items) ? items.map(normalizeCalendarEvent).filter(Boolean) : [];
+}
 function mergeRecordsById(remoteItems, localItems, normalize = (item) => item) {
   const merged = new Map();
   remoteItems.forEach((item) => merged.set(item.id, normalize(item)));
@@ -121,22 +134,25 @@ function applyPlannerState(state) {
   const shouldPreserveLocal = lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt);
   isApplyingRemoteState = true;
   const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
-  const remoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
+  const rawRemoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
+  const remoteCalendarEvents = normalizeCalendarEvents(rawRemoteCalendarEvents);
+  const didCleanRemoteCalendarEvents = rawRemoteCalendarEvents.length !== remoteCalendarEvents.length;
   const remoteMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
   const remoteQuickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
   tasks = shouldPreserveLocal ? mergeRecordsById(remoteTasks, tasks, normalizeTask) : remoteTasks.map(normalizeTask);
-  calendarEvents = shouldPreserveLocal ? mergeRecordsById(remoteCalendarEvents, calendarEvents) : remoteCalendarEvents;
+  calendarEvents = shouldPreserveLocal ? mergeRecordsById(remoteCalendarEvents, normalizeCalendarEvents(calendarEvents)) : remoteCalendarEvents;
   meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? { ...(shouldPreserveLocal ? meetingChecklists : {}), ...state.meetingChecklists } : (shouldPreserveLocal ? meetingChecklists : {});
   memoChecks = shouldPreserveLocal ? mergeRecordsById(remoteMemoChecks, memoChecks) : remoteMemoChecks;
   quickNotes = shouldPreserveLocal ? mergeRecordsById(remoteQuickNotes, quickNotes) : remoteQuickNotes;
   localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
+  calendarEvents = normalizeCalendarEvents(calendarEvents);
   localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
   localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
   localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
   localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
   render();
   isApplyingRemoteState = false;
-  if (shouldPreserveLocal) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
+  if (shouldPreserveLocal || didCleanRemoteCalendarEvents) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
 }
 
 function savePlannerState() {
@@ -161,10 +177,11 @@ function startFirebaseSync() {
 }
 function loadCalendarEvents() {
   const saved = localStorage.getItem("leaderDashboardCalendarEvents");
-  return saved ? JSON.parse(saved) : [];
+  return saved ? normalizeCalendarEvents(JSON.parse(saved)) : [];
 }
 
 function saveCalendarEvents() {
+  calendarEvents = normalizeCalendarEvents(calendarEvents);
   localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
   savePlannerState();
 }
@@ -587,7 +604,7 @@ eventForm.addEventListener("submit", (event) => {
     if (original) {
       const oldKey = eventKey(original);
       const nextId = original.id || crypto.randomUUID();
-      calendarEvents = calendarEvents.map((eventItem) => (eventItem.id || eventKey(eventItem)) === editingEventId ? { id: nextId, date, time, title, kind } : eventItem);
+      calendarEvents = calendarEvents.map((eventItem) => (eventItem.id || eventKey(eventItem)) === editingEventId ? normalizeCalendarEvent({ id: nextId, date, time, title, kind }) : eventItem).filter(Boolean);
       const newKey = eventKey({ date, time, title });
       if (oldKey !== newKey && meetingChecklists[oldKey]) {
         meetingChecklists[newKey] = meetingChecklists[oldKey];
@@ -596,7 +613,7 @@ eventForm.addEventListener("submit", (event) => {
       }
     }
   } else {
-    calendarEvents.push({ id: crypto.randomUUID(), date, time, title, kind });
+    calendarEvents.push(normalizeCalendarEvent({ id: crypto.randomUUID(), date, time, title, kind }));
   }
   saveCalendarEvents();
   resetEventForm(date);
