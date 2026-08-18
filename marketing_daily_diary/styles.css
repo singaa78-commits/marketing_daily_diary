@@ -967,3 +967,8 @@ h2 {
 
 
 
+
+.event.check { border-left-color: #b7d7ff; }
+.event.schedule { border-left-color: #b9e7a8; }
+.event.deadline { border-left-color: #f5a3bb; }
+.event.meeting { border-left-color: #ffe66d; }

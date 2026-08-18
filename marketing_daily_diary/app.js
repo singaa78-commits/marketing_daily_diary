@@ -19,6 +19,13 @@ const ownerNameMap = {
   "최현우": "박정연",
 };
 const priorityLabels = { high: "높음", medium: "보통", low: "낮음" };
+const eventKindLabels = {
+  meeting: "회의",
+  check: "체크",
+  schedule: "일정",
+  deadline: "마감",
+  review: "리뷰",
+};
 const categoryLabels = {
   message: "이미지 제작 발송",
   performance: "성과 체크",
@@ -234,7 +241,7 @@ function renderEvents(events, limit = 4) {
   return `${visible.map((event) => {
     const key = eventKey(event);
     const items = meetingChecklists[key] || [];
-    return `<div class="event ${event.kind}"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${renderMeetingChecklist(key, items)}</div>`;
+    return `<div class="event ${event.kind}"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div>${event.kind === "meeting" ? renderMeetingChecklist(key, items) : ""}</div>`;
   }).join("")}${hiddenCount > 0 ? `<p class="empty">외 ${hiddenCount}건</p>` : ""}`;
 }
 
@@ -384,6 +391,7 @@ todayButton.addEventListener("click", () => { visibleMonth = new Date(baseToday.
 resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
 
 render();
+
 
 
 
