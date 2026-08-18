@@ -264,9 +264,11 @@ function createWorkflow() {
 
 function normalizeTask(task) {
   const category = task.category || "general";
-  const workflow = category === "influencer" ? { ...createWorkflow(), ...(task.workflow || {}) } : task.workflow;
   const due = /^\d{4}-\d{2}-\d{2}$/.test(task.due || "") ? task.due : formatDateKey(baseToday);
-  return { ...task, due, owner: ownerNameMap[task.owner] || task.owner, category, workflow };
+  const normalized = { ...task, due, owner: ownerNameMap[task.owner] || task.owner, category };
+  if (category === "influencer") normalized.workflow = { ...createWorkflow(), ...(task.workflow || {}) };
+  else delete normalized.workflow;
+  return normalized;
 }
 
 function loadTasks() {
