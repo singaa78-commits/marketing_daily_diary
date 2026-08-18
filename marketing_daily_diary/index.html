@@ -125,6 +125,22 @@
         </form>        <div id="monthWeekdays" class="month-weekdays" aria-hidden="true"></div>
         <div id="calendarGrid" class="calendar-grid"></div>
       </section>
+      <section class="scratch-note-area" aria-label="자유 메모장">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Memo</p>
+            <h2>메모장</h2>
+          </div>
+        </div>
+        <form id="scratchNoteForm" class="scratch-note-form" aria-label="메모 추가">
+          <textarea id="scratchNoteText" rows="5" placeholder="간단한 메모, 참고 링크, 아이디어를 자유롭게 적어두세요." required></textarea>
+          <div class="scratch-note-actions">
+            <button type="submit">메모 저장</button>
+            <button id="clearScratchNoteButton" class="ghost-button" type="button">입력 지우기</button>
+          </div>
+        </form>
+        <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
+      </section>
     </main>
     <script src="app.js"></script>
   </body>

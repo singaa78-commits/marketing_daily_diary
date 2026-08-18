@@ -38,6 +38,7 @@ const baseToday = new Date(2026, 7, 18);
 let tasks = loadTasks();
 let meetingChecklists = loadMeetingChecklists();
 let memoChecks = loadMemoChecks();
+let quickNotes = loadQuickNotes();
 
 let activeFilter = "all";
 let calendarView = "week";
@@ -64,6 +65,10 @@ const nextWeekList = document.querySelector("#nextWeekList");
 const monthlyProgressTabs = document.querySelector("#monthlyProgressTabs");
 const monthlyProgressCurrent = document.querySelector("#monthlyProgressCurrent");
 const monthlyProgressList = document.querySelector("#monthlyProgressList");
+const scratchNoteForm = document.querySelector("#scratchNoteForm");
+const scratchNoteText = document.querySelector("#scratchNoteText");
+const clearScratchNoteButton = document.querySelector("#clearScratchNoteButton");
+const scratchNoteList = document.querySelector("#scratchNoteList");
 
 
 
@@ -86,6 +91,15 @@ function saveMemoChecks() {
   localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
 }
 
+
+function loadQuickNotes() {
+  const saved = localStorage.getItem("leaderDashboardQuickNotes");
+  return saved ? JSON.parse(saved) : [];
+}
+
+function saveQuickNotes() {
+  localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
+}
 function loadMeetingChecklists() {
   const saved = localStorage.getItem("leaderDashboardMeetingChecklists");
   return saved ? JSON.parse(saved) : {};
@@ -123,6 +137,7 @@ function render() {
   renderMemoChecks();
   renderUpcomingWork();
   renderMonthlyProgress();
+  renderQuickNotes();
 }
 
 
@@ -191,6 +206,32 @@ function formatMonthLabel(monthKey) {
 function monthFromWhen(when) {
   if (when === "다음 달") return formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1));
   return formatMonthKey(baseToday);
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"]/g, (char) => {
+    if (char === "&") return "&amp;";
+    if (char === "<") return "&lt;";
+    if (char === ">") return "&gt;";
+    return "&quot;";
+  });
+}
+
+function linkifyText(value) {
+  const safe = escapeHtml(value);
+  return safe.replace(/(https?:\/\/[^\s<]+)/g, `<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>`).replace(/\n/g, "<br />");
+}
+
+function renderQuickNotes() {
+  if (!scratchNoteList) return;
+  scratchNoteList.innerHTML = quickNotes.map((note) => `
+    <li class="scratch-note-item">
+      <div class="scratch-note-content">${linkifyText(note.text)}</div>
+      <small>${note.createdAt}</small>
+      <button class="scratch-note-delete" type="button" data-note-delete="${note.id}">삭제</button>
+    </li>
+  `).join("");
+  if (!quickNotes.length) scratchNoteList.innerHTML = `<li class="empty">아직 저장된 메모가 없습니다.</li>`;
 }
 function renderTasks() {
   const visibleTasks = tasks.filter((task) => {
@@ -353,6 +394,29 @@ function resetEventForm(date = formatDateKey(baseToday)) {
 
 
 
+
+scratchNoteForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const text = scratchNoteText.value.trim();
+  if (!text) return;
+  quickNotes.unshift({ id: crypto.randomUUID(), text, createdAt: formatDateKey(baseToday) });
+  saveQuickNotes();
+  scratchNoteForm.reset();
+  renderQuickNotes();
+});
+
+clearScratchNoteButton?.addEventListener("click", () => {
+  scratchNoteText.value = "";
+  scratchNoteText.focus();
+});
+
+scratchNoteList?.addEventListener("click", (event) => {
+  const deleteId = event.target.closest("[data-note-delete]")?.dataset.noteDelete;
+  if (!deleteId) return;
+  quickNotes = quickNotes.filter((note) => note.id !== deleteId);
+  saveQuickNotes();
+  renderQuickNotes();
+});
 memoCheckForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = document.querySelector("#memoCheckText").value.trim();
@@ -382,6 +446,7 @@ monthlyProgressTabs?.addEventListener("click", (event) => {
   if (!month) return;
   activeProgressMonth = month;
   renderMonthlyProgress();
+  renderQuickNotes();
 });
 eventForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -504,6 +569,6 @@ document.querySelector("#calendarGrid").addEventListener("keydown", (event) => {
   startEditingEvent(eventEdit.dataset.eventEdit);
 });
 
-resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
+resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; quickNotes = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); saveQuickNotes(); render(); });
 
 render();

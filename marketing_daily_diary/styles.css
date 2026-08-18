@@ -1235,3 +1235,86 @@ body {
 .month-check {
   display: none;
 }
+
+/* scratch-note-area */
+.scratch-note-area {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+}
+.scratch-note-form {
+  display: grid;
+  gap: 10px;
+}
+.scratch-note-form textarea {
+  width: 100%;
+  min-height: 150px;
+  border: 1px solid #d9d9d9;
+  background: #fffdf0;
+  padding: 12px;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+.scratch-note-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.scratch-note-actions button,
+.scratch-note-delete {
+  min-height: 36px;
+  border: 1px solid #202124;
+  background: #202124;
+  color: #fff;
+  padding: 0 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.scratch-note-actions .ghost-button {
+  background: #fff;
+  color: #202124;
+}
+.scratch-note-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.scratch-note-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid #e1e1e1;
+  background: #fff;
+}
+.scratch-note-content {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.scratch-note-content a {
+  color: #2563eb;
+  font-weight: 900;
+  text-decoration: underline;
+}
+.scratch-note-item small {
+  color: #6b7280;
+  font-weight: 800;
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .scratch-note-item {
+    grid-template-columns: 1fr;
+  }
+  .scratch-note-actions {
+    justify-content: stretch;
+  }
+  .scratch-note-actions button {
+    flex: 1;
+  }
+}
