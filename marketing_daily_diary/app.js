@@ -159,13 +159,17 @@ function applyPlannerState(state) {
   if (shouldPreserveLocal || didCleanRemoteCalendarEvents || pendingTasks.length) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
 }
 
-function savePlannerState() {
+function savePlannerFields(fields) {
   if (isApplyingRemoteState) return;
   const updatedAt = new Date().toISOString();
   lastLocalMutationAt = Date.parse(updatedAt);
-  setDoc(plannerStateRef, serializePlannerState(updatedAt), { merge: true }).catch((error) => {
+  setDoc(plannerStateRef, { ...fields, updatedAt }, { merge: true }).catch((error) => {
     console.warn("Firebase 저장 실패", error);
   });
+}
+
+function savePlannerState() {
+  savePlannerFields(serializePlannerState());
 }
 
 function startFirebaseSync() {
@@ -187,7 +191,7 @@ function loadCalendarEvents() {
 function saveCalendarEvents() {
   calendarEvents = normalizeCalendarEvents(calendarEvents);
   localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
-  savePlannerState();
+  savePlannerFields({ calendarEvents });
 }
 
 function loadMemoChecks() {
@@ -197,7 +201,7 @@ function loadMemoChecks() {
 
 function saveMemoChecks() {
   localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
-  savePlannerState();
+  savePlannerFields({ memoChecks });
 }
 
 
@@ -208,7 +212,7 @@ function loadQuickNotes() {
 
 function saveQuickNotes() {
   localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
-  savePlannerState();
+  savePlannerFields({ quickNotes });
 }
 function loadMeetingChecklists() {
   const saved = localStorage.getItem("leaderDashboardMeetingChecklists");
@@ -217,7 +221,7 @@ function loadMeetingChecklists() {
 
 function saveMeetingChecklists() {
   localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
-  savePlannerState();
+  savePlannerFields({ meetingChecklists });
 }
 
 eventDate.value = formatDateKey(baseToday);
@@ -239,7 +243,7 @@ function loadTasks() {
 
 function saveTasks() {
   localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
-  savePlannerState();
+  savePlannerFields({ tasks });
 }
 
 function render() {
