@@ -129,6 +129,25 @@ function mergeRecordsById(remoteItems, localItems, normalize = (item) => item) {
 function hasLocalPlannerState() {
   return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length;
 }
+function readStoredJson(key, fallback) {
+  const saved = localStorage.getItem(key);
+  if (!saved) return fallback;
+  try {
+    return JSON.parse(saved);
+  } catch (error) {
+    console.warn(`${key} 로컬 저장값 복구 실패`, error);
+    localStorage.removeItem(key);
+    return fallback;
+  }
+}
+
+function writeStoredJson(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn(`${key} 로컬 저장 실패`, error);
+  }
+}
 
 function applyPlannerState(state) {
   const remoteUpdatedAt = Date.parse(state.updatedAt || "");
@@ -149,12 +168,12 @@ function applyPlannerState(state) {
   meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? { ...(shouldPreserveLocal ? meetingChecklists : {}), ...state.meetingChecklists } : (shouldPreserveLocal ? meetingChecklists : {});
   memoChecks = shouldPreserveLocal ? mergeRecordsById(remoteMemoChecks, memoChecks) : remoteMemoChecks;
   quickNotes = shouldPreserveLocal ? mergeRecordsById(remoteQuickNotes, quickNotes) : remoteQuickNotes;
-  localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
+  writeStoredJson("leaderDashboardTasks", tasks);
   calendarEvents = normalizeCalendarEvents(calendarEvents);
-  localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
-  localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
-  localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
-  localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
+  writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
+  writeStoredJson("leaderDashboardMeetingChecklists", meetingChecklists);
+  writeStoredJson("leaderDashboardMemoChecks", memoChecks);
+  writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   render();
   isApplyingRemoteState = false;
   if (shouldPreserveLocal || didCleanRemoteCalendarEvents || pendingTasks.length) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
@@ -164,9 +183,13 @@ function savePlannerFields(fields) {
   if (isApplyingRemoteState) return;
   const updatedAt = new Date().toISOString();
   lastLocalMutationAt = Date.parse(updatedAt);
-  setDoc(plannerStateRef, { ...fields, updatedAt }, { merge: true }).catch((error) => {
-    console.warn("Firebase 저장 실패", error);
-  });
+  try {
+    setDoc(plannerStateRef, { ...fields, updatedAt }, { merge: true }).catch((error) => {
+      console.warn("Firebase 저장 실패", error);
+    });
+  } catch (error) {
+    console.warn("Firebase 저장 시작 실패", error);
+  }
 }
 
 function savePlannerState() {
@@ -185,43 +208,42 @@ function startFirebaseSync() {
   });
 }
 function loadCalendarEvents() {
-  const saved = localStorage.getItem("leaderDashboardCalendarEvents");
-  return saved ? normalizeCalendarEvents(JSON.parse(saved)) : [];
+  return normalizeCalendarEvents(readStoredJson("leaderDashboardCalendarEvents", []));
 }
 
 function saveCalendarEvents() {
   calendarEvents = normalizeCalendarEvents(calendarEvents);
-  localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
+  writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
   savePlannerFields({ calendarEvents });
 }
 
 function loadMemoChecks() {
-  const saved = localStorage.getItem("leaderDashboardMemoChecks");
-  return saved ? JSON.parse(saved) : [];
+  const items = readStoredJson("leaderDashboardMemoChecks", []);
+  return Array.isArray(items) ? items : [];
 }
 
 function saveMemoChecks() {
-  localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
+  writeStoredJson("leaderDashboardMemoChecks", memoChecks);
   savePlannerFields({ memoChecks });
 }
 
 
 function loadQuickNotes() {
-  const saved = localStorage.getItem("leaderDashboardQuickNotes");
-  return saved ? JSON.parse(saved) : [];
+  const items = readStoredJson("leaderDashboardQuickNotes", []);
+  return Array.isArray(items) ? items : [];
 }
 
 function saveQuickNotes() {
-  localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
+  writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   savePlannerFields({ quickNotes });
 }
 function loadMeetingChecklists() {
-  const saved = localStorage.getItem("leaderDashboardMeetingChecklists");
-  return saved ? JSON.parse(saved) : {};
+  const items = readStoredJson("leaderDashboardMeetingChecklists", {});
+  return items && typeof items === "object" && !Array.isArray(items) ? items : {};
 }
 
 function saveMeetingChecklists() {
-  localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
+  writeStoredJson("leaderDashboardMeetingChecklists", meetingChecklists);
   savePlannerFields({ meetingChecklists });
 }
 
@@ -238,12 +260,12 @@ function normalizeTask(task) {
 }
 
 function loadTasks() {
-  const saved = localStorage.getItem("leaderDashboardTasks");
-  return (saved ? JSON.parse(saved) : seedTasks).map(normalizeTask);
+  const items = readStoredJson("leaderDashboardTasks", seedTasks);
+  return (Array.isArray(items) ? items : seedTasks).map(normalizeTask);
 }
 
 function saveTasks() {
-  localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
+  writeStoredJson("leaderDashboardTasks", tasks);
   savePlannerFields({ tasks });
 }
 
