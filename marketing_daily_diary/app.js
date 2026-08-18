@@ -64,6 +64,7 @@ let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 let activeProgressMonth = null;
 let editingQuickNoteId = null;
 let lastLocalMutationAt = 0;
+const pendingTaskIds = new Set();
 
 const taskList = document.querySelector("#taskList");
 const taskForm = document.querySelector("#taskForm");
@@ -134,12 +135,15 @@ function applyPlannerState(state) {
   const shouldPreserveLocal = lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt);
   isApplyingRemoteState = true;
   const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
+  const remoteTaskIds = new Set(remoteTasks.map((task) => task.id));
+  const pendingTasks = tasks.filter((task) => pendingTaskIds.has(task.id) && !remoteTaskIds.has(task.id));
+  remoteTaskIds.forEach((taskId) => pendingTaskIds.delete(taskId));
   const rawRemoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
   const remoteCalendarEvents = normalizeCalendarEvents(rawRemoteCalendarEvents);
   const didCleanRemoteCalendarEvents = rawRemoteCalendarEvents.length !== remoteCalendarEvents.length;
   const remoteMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
   const remoteQuickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
-  tasks = shouldPreserveLocal ? mergeRecordsById(remoteTasks, tasks, normalizeTask) : remoteTasks.map(normalizeTask);
+  tasks = mergeRecordsById(remoteTasks, shouldPreserveLocal ? tasks : pendingTasks, normalizeTask);
   calendarEvents = shouldPreserveLocal ? mergeRecordsById(remoteCalendarEvents, normalizeCalendarEvents(calendarEvents)) : remoteCalendarEvents;
   meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? { ...(shouldPreserveLocal ? meetingChecklists : {}), ...state.meetingChecklists } : (shouldPreserveLocal ? meetingChecklists : {});
   memoChecks = shouldPreserveLocal ? mergeRecordsById(remoteMemoChecks, memoChecks) : remoteMemoChecks;
@@ -152,7 +156,7 @@ function applyPlannerState(state) {
   localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
   render();
   isApplyingRemoteState = false;
-  if (shouldPreserveLocal || didCleanRemoteCalendarEvents) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
+  if (shouldPreserveLocal || didCleanRemoteCalendarEvents || pendingTasks.length) setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
 }
 
 function savePlannerState() {
@@ -422,7 +426,11 @@ function renderWeekCalendar() {
   weekdays.classList.remove("is-visible");
   weekdays.innerHTML = "";
   grid.className = "calendar-grid week-view";
-  grid.innerHTML = days.map((dateItem) => `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}"><div class="day-name"><span>${formatWeekday(dateItem)}</span><span>${formatShortDate(dateItem)}</span></div>${renderEvents(eventsForDate(formatDateKey(dateItem)))}</article>`).join("");
+  grid.innerHTML = days.map((dateItem) => {
+    const dateEvents = eventsForDate(formatDateKey(dateItem));
+    const minHeight = Math.max(300, 88 + dateEvents.length * 128);
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" style="min-height: ${minHeight}px;"><div class="day-name"><span>${formatWeekday(dateItem)}</span><span>${formatShortDate(dateItem)}</span></div>${renderEvents(dateEvents)}</article>`;
+  }).join("");
 }
 
 function renderMonthCalendar() {
@@ -625,7 +633,9 @@ taskForm.addEventListener("submit", (event) => {
   const title = document.querySelector("#taskTitle").value.trim();
   const category = document.querySelector("#taskCategory").value;
   if (!title) return;
-  tasks.unshift(normalizeTask({ id: crypto.randomUUID(), title, owner: document.querySelector("#taskOwner").value, priority: document.querySelector("#taskPriority").value, category, due: "오늘", done: false, type: "task" }));
+  const taskId = crypto.randomUUID();
+  pendingTaskIds.add(taskId);
+  tasks.unshift(normalizeTask({ id: taskId, title, owner: document.querySelector("#taskOwner").value, priority: document.querySelector("#taskPriority").value, category, due: "오늘", done: false, type: "task" }));
   taskForm.reset();
   document.querySelector("#taskOwner").value = "ME";
   document.querySelector("#taskCategory").value = "message";
