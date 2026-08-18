@@ -64,7 +64,7 @@ h2 { margin-bottom: 0; font-size: 1.24rem; letter-spacing: 0; }
 .task-item.is-done .task-title { color: var(--muted); text-decoration: line-through; }
 .check { display: grid; place-items: center; width: 28px; height: 28px; border: 2px solid var(--line); border-radius: 50%; background: white; color: white; font-weight: 900; }
 .is-done .check { border-color: var(--green); background: var(--green); }
-.task-title { margin: 0 0 8px; font-weight: 800; }
+.task-title { margin: 0 0 8px; font-weight: 400; }
 .task-meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 0.84rem; }
 .pill { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 999px; background: #eef2f6; color: var(--muted); font-weight: 700; }
 .pill.high { background: rgba(201,77,69,0.1); color: var(--red); }
@@ -1063,6 +1063,7 @@ h2 {
 }
 .upcoming-item strong {
   overflow-wrap: anywhere;
+  font-weight: 400;
 }
 .upcoming-item small {
   grid-column: 2;
@@ -1177,6 +1178,7 @@ h2 {
 }
 .monthly-progress-list strong {
   overflow-wrap: anywhere;
+  font-weight: 400;
 }
 .monthly-progress-list small {
   color: #6b7280;
