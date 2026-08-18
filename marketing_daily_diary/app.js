@@ -1,3 +1,20 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { doc, getFirestore, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAKhx3ZU3DPb0Pd3FVj-vm4Bm0HRPMJxRc",
+  authDomain: "planner-a868a.firebaseapp.com",
+  projectId: "planner-a868a",
+  storageBucket: "planner-a868a.firebasestorage.app",
+  messagingSenderId: "115731897867",
+  appId: "1:115731897867:web:0c4fee82eca6db51f9310e",
+  measurementId: "G-8VPTZL6STG"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const firestoreDb = getFirestore(firebaseApp);
+const plannerStateRef = doc(firestoreDb, "plannerState", "main");
+let isApplyingRemoteState = false;
 const influencerSteps = [
   { id: "listed", label: "리스트업" },
   { id: "meReview", label: "ME 체크" },
@@ -73,6 +90,56 @@ const scratchNoteList = document.querySelector("#scratchNoteList");
 
 
 
+
+function serializePlannerState() {
+  return {
+    tasks,
+    calendarEvents,
+    meetingChecklists,
+    memoChecks,
+    quickNotes,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function hasLocalPlannerState() {
+  return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length;
+}
+
+function applyPlannerState(state) {
+  isApplyingRemoteState = true;
+  tasks = Array.isArray(state.tasks) ? state.tasks.map(normalizeTask) : [];
+  calendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
+  meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {};
+  memoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  quickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
+  localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
+  localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
+  localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
+  localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
+  localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
+  render();
+  isApplyingRemoteState = false;
+}
+
+function savePlannerState() {
+  if (isApplyingRemoteState) return;
+  setDoc(plannerStateRef, serializePlannerState(), { merge: true }).catch((error) => {
+    console.warn("Firebase 저장 실패", error);
+  });
+}
+
+function startFirebaseSync() {
+  onSnapshot(plannerStateRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      if (hasLocalPlannerState()) savePlannerState();
+      return;
+    }
+    applyPlannerState(snapshot.data());
+  }, (error) => {
+    console.warn("Firebase 동기화 실패", error);
+  });
+}
 function loadCalendarEvents() {
   const saved = localStorage.getItem("leaderDashboardCalendarEvents");
   return saved ? JSON.parse(saved) : [];
@@ -80,6 +147,7 @@ function loadCalendarEvents() {
 
 function saveCalendarEvents() {
   localStorage.setItem("leaderDashboardCalendarEvents", JSON.stringify(calendarEvents));
+  savePlannerState();
 }
 
 function loadMemoChecks() {
@@ -89,6 +157,7 @@ function loadMemoChecks() {
 
 function saveMemoChecks() {
   localStorage.setItem("leaderDashboardMemoChecks", JSON.stringify(memoChecks));
+  savePlannerState();
 }
 
 
@@ -99,6 +168,7 @@ function loadQuickNotes() {
 
 function saveQuickNotes() {
   localStorage.setItem("leaderDashboardQuickNotes", JSON.stringify(quickNotes));
+  savePlannerState();
 }
 function loadMeetingChecklists() {
   const saved = localStorage.getItem("leaderDashboardMeetingChecklists");
@@ -107,7 +177,10 @@ function loadMeetingChecklists() {
 
 function saveMeetingChecklists() {
   localStorage.setItem("leaderDashboardMeetingChecklists", JSON.stringify(meetingChecklists));
-}eventDate.value = formatDateKey(baseToday);
+  savePlannerState();
+}
+
+eventDate.value = formatDateKey(baseToday);
 
 function createWorkflow() {
   return Object.fromEntries(influencerSteps.map((step) => [step.id, false]));
@@ -126,6 +199,7 @@ function loadTasks() {
 
 function saveTasks() {
   localStorage.setItem("leaderDashboardTasks", JSON.stringify(tasks));
+  savePlannerState();
 }
 
 function render() {
@@ -572,3 +646,4 @@ document.querySelector("#calendarGrid").addEventListener("keydown", (event) => {
 resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; quickNotes = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); saveQuickNotes(); render(); });
 
 render();
+startFirebaseSync();
