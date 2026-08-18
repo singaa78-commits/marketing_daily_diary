@@ -26,7 +26,6 @@ const influencerSteps = [
 
 const seedTasks = [];
 
-let calendarEvents = loadCalendarEvents();
 
 const ownerNameMap = {
   "me (박현주)": "ME",
@@ -52,6 +51,7 @@ const categoryLabels = {
   general: "기타",
 };
 const baseToday = new Date(2026, 7, 18);
+let calendarEvents = loadCalendarEvents();
 let tasks = loadTasks();
 let meetingChecklists = loadMeetingChecklists();
 let memoChecks = loadMemoChecks();
