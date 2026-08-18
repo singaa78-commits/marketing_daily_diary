@@ -1098,3 +1098,77 @@ h2 {
 @media (max-width: 640px) {
   .event-form { grid-template-columns: 1fr; }
 }
+
+/* monthly-progress-panel */
+.workspace {
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 0.95fr);
+  align-items: start;
+}
+.monthly-progress-panel {
+  min-height: 420px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  padding: 18px;
+}
+.monthly-progress-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #202124;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+.monthly-progress-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.monthly-tab {
+  border: 1px solid #202124;
+  background: #fff;
+  padding: 7px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.monthly-tab.is-active {
+  background: #ffe66d;
+  box-shadow: inset 0 -4px 0 #ffd0a6;
+}
+.monthly-progress-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.monthly-progress-list li:not(.empty) {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #e1e1e1;
+  background: #fffdf0;
+}
+.progress-check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: #b9e7a8;
+  border: 1px solid #202124;
+  font-weight: 900;
+}
+.monthly-progress-list strong {
+  overflow-wrap: anywhere;
+}
+.monthly-progress-list small {
+  color: #6b7280;
+  font-weight: 800;
+}
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}

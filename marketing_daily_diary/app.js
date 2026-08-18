@@ -43,6 +43,7 @@ let activeFilter = "all";
 let calendarView = "week";
 let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
+let activeProgressMonth = null;
 
 const taskList = document.querySelector("#taskList");
 const taskForm = document.querySelector("#taskForm");
@@ -60,6 +61,8 @@ const memoCheckForm = document.querySelector("#memoCheckForm");
 const memoCheckList = document.querySelector("#memoCheckList");
 const thisWeekList = document.querySelector("#thisWeekList");
 const nextWeekList = document.querySelector("#nextWeekList");
+const monthlyProgressTabs = document.querySelector("#monthlyProgressTabs");
+const monthlyProgressList = document.querySelector("#monthlyProgressList");
 
 
 
@@ -118,6 +121,7 @@ function render() {
   renderCalendar();
   renderMemoChecks();
   renderUpcomingWork();
+  renderMonthlyProgress();
 }
 
 
@@ -156,6 +160,32 @@ function getEventsInRange(start, end) {
       return eventDate >= start && eventDate <= end;
     })
     .sort((first, second) => `${first.date} ${first.time}`.localeCompare(`${second.date} ${second.time}`));
+}
+
+function renderMonthlyProgress() {
+  if (!monthlyProgressTabs || !monthlyProgressList) return;
+  const completedItems = memoChecks.filter((item) => item.done);
+  const baseMonth = formatMonthKey(baseToday);
+  const nextMonth = formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1));
+  const months = [...new Set([baseMonth, nextMonth, ...completedItems.map((item) => item.completedMonth || monthFromWhen(item.when) || baseMonth)])].sort();
+  if (!activeProgressMonth || !months.includes(activeProgressMonth)) activeProgressMonth = baseMonth;
+  monthlyProgressTabs.innerHTML = months.map((month) => `<button type="button" class="monthly-tab ${month === activeProgressMonth ? "is-active" : ""}" data-progress-month="${month}">${formatMonthLabel(month)}</button>`).join("");
+  const visibleItems = completedItems.filter((item) => (item.completedMonth || monthFromWhen(item.when) || baseMonth) === activeProgressMonth);
+  monthlyProgressList.innerHTML = visibleItems.length ? visibleItems.map((item) => `<li><span class="progress-check">✓</span><strong>${item.text}</strong><small>${item.completedAt || item.when || "완료"}</small></li>`).join("") : `<li class="empty">해당 월에 완료 체크된 항목이 없습니다.</li>`;
+}
+
+function formatMonthKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function formatMonthLabel(monthKey) {
+  const [, month] = monthKey.split("-");
+  return `${Number(month)}월`;
+}
+
+function monthFromWhen(when) {
+  if (when === "다음 달") return formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1));
+  return formatMonthKey(baseToday);
 }
 function renderTasks() {
   const visibleTasks = tasks.filter((task) => {
@@ -345,10 +375,21 @@ memoCheckForm.addEventListener("submit", (event) => {
 memoCheckList.addEventListener("click", (event) => {
   const toggleId = event.target.closest("[data-memo-toggle]")?.dataset.memoToggle;
   const deleteId = event.target.closest("[data-memo-delete]")?.dataset.memoDelete;
-  if (toggleId) memoChecks = memoChecks.map((item) => item.id === toggleId ? { ...item, done: !item.done } : item);
+  if (toggleId) memoChecks = memoChecks.map((item) => {
+    if (item.id !== toggleId) return item;
+    const nextDone = !item.done;
+    return { ...item, done: nextDone, completedAt: nextDone ? formatDateKey(baseToday) : undefined, completedMonth: nextDone ? formatMonthKey(baseToday) : undefined };
+  });
   if (deleteId) memoChecks = memoChecks.filter((item) => item.id !== deleteId);
   saveMemoChecks();
   render();
+});
+
+monthlyProgressTabs?.addEventListener("click", (event) => {
+  const month = event.target.closest("[data-progress-month]")?.dataset.progressMonth;
+  if (!month) return;
+  activeProgressMonth = month;
+  renderMonthlyProgress();
 });
 eventForm.addEventListener("submit", (event) => {
   event.preventDefault();
