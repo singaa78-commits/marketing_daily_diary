@@ -136,8 +136,9 @@
         <form id="scratchNoteForm" class="scratch-note-form" aria-label="메모 추가">
           <textarea id="scratchNoteText" rows="5" placeholder="간단한 메모, 참고 링크, 아이디어를 자유롭게 적어두세요." required></textarea>
           <div class="scratch-note-actions">
-            <button type="submit">메모 저장</button>
+            <button id="scratchNoteSubmitButton" type="submit">메모 저장</button>
             <button id="clearScratchNoteButton" class="ghost-button" type="button">입력 지우기</button>
+            <button id="cancelScratchNoteEditButton" class="ghost-button is-hidden" type="button">수정 취소</button>
           </div>
         </form>
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>

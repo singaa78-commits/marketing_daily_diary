@@ -62,6 +62,7 @@ let calendarView = "week";
 let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 let activeProgressMonth = null;
+let editingQuickNoteId = null;
 
 const taskList = document.querySelector("#taskList");
 const taskForm = document.querySelector("#taskForm");
@@ -84,7 +85,9 @@ const monthlyProgressCurrent = document.querySelector("#monthlyProgressCurrent")
 const monthlyProgressList = document.querySelector("#monthlyProgressList");
 const scratchNoteForm = document.querySelector("#scratchNoteForm");
 const scratchNoteText = document.querySelector("#scratchNoteText");
+const scratchNoteSubmitButton = document.querySelector("#scratchNoteSubmitButton");
 const clearScratchNoteButton = document.querySelector("#clearScratchNoteButton");
+const cancelScratchNoteEditButton = document.querySelector("#cancelScratchNoteEditButton");
 const scratchNoteList = document.querySelector("#scratchNoteList");
 
 
@@ -302,6 +305,7 @@ function renderQuickNotes() {
     <li class="scratch-note-item">
       <div class="scratch-note-content">${linkifyText(note.text)}</div>
       <small>${note.createdAt}</small>
+      <button class="scratch-note-edit" type="button" data-note-edit="${note.id}">수정</button>
       <button class="scratch-note-delete" type="button" data-note-delete="${note.id}">삭제</button>
     </li>
   `).join("");
@@ -469,13 +473,34 @@ function resetEventForm(date = formatDateKey(baseToday)) {
 
 
 
+
+function startEditingQuickNote(noteId) {
+  const note = quickNotes.find((item) => item.id === noteId);
+  if (!note) return;
+  editingQuickNoteId = noteId;
+  scratchNoteText.value = note.text;
+  scratchNoteSubmitButton.textContent = "수정 저장";
+  cancelScratchNoteEditButton.classList.remove("is-hidden");
+  scratchNoteText.focus();
+}
+
+function resetQuickNoteForm() {
+  editingQuickNoteId = null;
+  scratchNoteForm.reset();
+  scratchNoteSubmitButton.textContent = "메모 저장";
+  cancelScratchNoteEditButton.classList.add("is-hidden");
+}
 scratchNoteForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = scratchNoteText.value.trim();
   if (!text) return;
-  quickNotes.unshift({ id: crypto.randomUUID(), text, createdAt: formatDateKey(baseToday) });
+  if (editingQuickNoteId) {
+    quickNotes = quickNotes.map((note) => note.id === editingQuickNoteId ? { ...note, text, updatedAt: formatDateKey(baseToday) } : note);
+  } else {
+    quickNotes.unshift({ id: crypto.randomUUID(), text, createdAt: formatDateKey(baseToday) });
+  }
   saveQuickNotes();
-  scratchNoteForm.reset();
+  resetQuickNoteForm();
   renderQuickNotes();
 });
 
@@ -484,10 +509,18 @@ clearScratchNoteButton?.addEventListener("click", () => {
   scratchNoteText.focus();
 });
 
+cancelScratchNoteEditButton?.addEventListener("click", () => resetQuickNoteForm());
+
 scratchNoteList?.addEventListener("click", (event) => {
+  const editId = event.target.closest("[data-note-edit]")?.dataset.noteEdit;
   const deleteId = event.target.closest("[data-note-delete]")?.dataset.noteDelete;
+  if (editId) {
+    startEditingQuickNote(editId);
+    return;
+  }
   if (!deleteId) return;
   quickNotes = quickNotes.filter((note) => note.id !== deleteId);
+  if (editingQuickNoteId === deleteId) resetQuickNoteForm();
   saveQuickNotes();
   renderQuickNotes();
 });
