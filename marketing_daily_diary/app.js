@@ -496,7 +496,7 @@ function renderMonthCalendar() {
 }
 
 function renderEvents(events, limit = 4) {
-  if (!events.length) return `<p class="empty">등록된 일정 없음</p>`;
+  if (!events.length) return "";
   const visible = events.slice(0, limit);
   const hiddenCount = events.length - visible.length;
   return `${visible.map((event) => {
