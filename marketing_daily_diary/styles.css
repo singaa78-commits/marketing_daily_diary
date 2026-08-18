@@ -1318,3 +1318,23 @@ body {
     flex: 1;
   }
 }
+
+/* event-calendar-link */
+.event-calendar-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 12px;
+  border: 1px solid #202124;
+  background: #ffe66d;
+  color: #202124;
+  padding: 8px 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+.event-calendar-link:hover,
+.event-calendar-link:focus-visible {
+  background: #fff8c7;
+  outline: 2px solid #202124;
+  outline-offset: 2px;
+}
