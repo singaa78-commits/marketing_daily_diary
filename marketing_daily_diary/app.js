@@ -132,7 +132,8 @@ function hasLocalPlannerState() {
 
 function applyPlannerState(state) {
   const remoteUpdatedAt = Date.parse(state.updatedAt || "");
-  const shouldPreserveLocal = lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt);
+  const remoteHasNoTasks = !Array.isArray(state.tasks) || state.tasks.length === 0;
+  const shouldPreserveLocal = (lastLocalMutationAt && (!remoteUpdatedAt || remoteUpdatedAt < lastLocalMutationAt)) || (remoteHasNoTasks && tasks.length > 0);
   isApplyingRemoteState = true;
   const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
   const remoteTaskIds = new Set(remoteTasks.map((task) => task.id));
