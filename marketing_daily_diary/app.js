@@ -111,6 +111,7 @@ function render() {
   renderFocus();
   renderOwners();
   renderCalendar();
+  renderMemoChecks();
 }
 
 
@@ -391,6 +392,8 @@ todayButton.addEventListener("click", () => { visibleMonth = new Date(baseToday.
 resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); render(); });
 
 render();
+
+
 
 
 
