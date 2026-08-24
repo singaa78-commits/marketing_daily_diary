@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { doc, getFirestore, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { doc, initializeFirestore, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAKhx3ZU3DPb0Pd3FVj-vm4Bm0HRPMJxRc",
@@ -12,7 +12,10 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const firestoreDb = getFirestore(firebaseApp);
+// ignoreUndefinedProperties: a field explicitly set to undefined (e.g. clearing
+// completedAt when a checklist item is un-checked) must not silently fail the
+// whole write — Firestore otherwise rejects any document containing undefined.
+const firestoreDb = initializeFirestore(firebaseApp, { ignoreUndefinedProperties: true });
 const plannerStateRef = doc(firestoreDb, "plannerState", "main");
 let isApplyingRemoteState = false;
 const influencerSteps = [
