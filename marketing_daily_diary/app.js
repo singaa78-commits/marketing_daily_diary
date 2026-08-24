@@ -66,7 +66,6 @@ let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 let activeProgressMonth = null;
 let editingQuickNoteId = null;
 let lastLocalMutationAt = 0;
-const pendingTaskIds = new Set();
 
 const taskList = document.querySelector("#taskList");
 const taskForm = document.querySelector("#taskForm");
@@ -122,12 +121,6 @@ function normalizeCalendarEvent(eventItem) {
 function normalizeCalendarEvents(items) {
   return Array.isArray(items) ? items.map(normalizeCalendarEvent).filter(Boolean) : [];
 }
-function mergeRecordsById(remoteItems, localItems, normalize = (item) => item) {
-  const merged = new Map();
-  remoteItems.forEach((item) => merged.set(item.id, normalize(item)));
-  localItems.forEach((item) => merged.set(item.id, normalize(item)));
-  return Array.from(merged.values());
-}
 function hasLocalPlannerState() {
   return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length;
 }
@@ -152,40 +145,26 @@ function writeStoredJson(key, value) {
 }
 
 function applyPlannerState(state) {
+  // Whole-document last-write-wins: if this snapshot is older than (or an echo of) our
+  // own most recent local edit, ignore it. Otherwise trust it completely. Merging remote
+  // with local by id (local always winning) used to mean a stale device could resurrect
+  // items deleted elsewhere, or overwrite a newer edit from another device — never fully
+  // adopting the latest state.
+  const remoteUpdatedAt = Date.parse(state.updatedAt || "") || 0;
+  if (remoteUpdatedAt < lastLocalMutationAt) return;
   isApplyingRemoteState = true;
-  const remoteTasks = Array.isArray(state.tasks) ? state.tasks : [];
-  const remoteTaskIds = new Set(remoteTasks.map((task) => task.id));
-  const hasLocalOnlyTasks = tasks.some((task) => !remoteTaskIds.has(task.id));
-  pendingTaskIds.forEach((taskId) => { if (remoteTaskIds.has(taskId)) pendingTaskIds.delete(taskId); });
-  const rawRemoteCalendarEvents = Array.isArray(state.calendarEvents) ? state.calendarEvents : [];
-  const remoteCalendarEvents = normalizeCalendarEvents(rawRemoteCalendarEvents);
-  const didCleanRemoteCalendarEvents = rawRemoteCalendarEvents.length !== remoteCalendarEvents.length;
-  const remoteCalendarIds = new Set(remoteCalendarEvents.map((eventItem) => eventItem.id));
-  const hasLocalOnlyCalendarEvents = calendarEvents.some((eventItem) => !remoteCalendarIds.has(eventItem.id));
-  const remoteMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
-  const remoteMemoIds = new Set(remoteMemoChecks.map((item) => item.id));
-  const hasLocalOnlyMemoChecks = memoChecks.some((item) => !remoteMemoIds.has(item.id));
-  const remoteQuickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
-  const remoteNoteIds = new Set(remoteQuickNotes.map((item) => item.id));
-  const hasLocalOnlyQuickNotes = quickNotes.some((item) => !remoteNoteIds.has(item.id));
-  // Always union remote with local by id (local wins on conflict) instead of picking one wholesale,
-  // so a stale/incomplete remote snapshot can never silently wipe out local-only additions.
-  tasks = mergeRecordsById(remoteTasks, tasks, normalizeTask);
-  calendarEvents = mergeRecordsById(remoteCalendarEvents, normalizeCalendarEvents(calendarEvents));
-  meetingChecklists = { ...(state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {}), ...meetingChecklists };
-  memoChecks = mergeRecordsById(remoteMemoChecks, memoChecks);
-  quickNotes = mergeRecordsById(remoteQuickNotes, quickNotes);
+  tasks = (Array.isArray(state.tasks) ? state.tasks : []).map(normalizeTask);
+  calendarEvents = normalizeCalendarEvents(state.calendarEvents);
+  meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {};
+  memoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  quickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
   writeStoredJson("leaderDashboardTasks", tasks);
-  calendarEvents = normalizeCalendarEvents(calendarEvents);
   writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
   writeStoredJson("leaderDashboardMeetingChecklists", meetingChecklists);
   writeStoredJson("leaderDashboardMemoChecks", memoChecks);
   writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   render();
   isApplyingRemoteState = false;
-  if (hasLocalOnlyTasks || hasLocalOnlyCalendarEvents || hasLocalOnlyMemoChecks || hasLocalOnlyQuickNotes || didCleanRemoteCalendarEvents) {
-    setDoc(plannerStateRef, serializePlannerState(new Date(lastLocalMutationAt || Date.now()).toISOString()), { merge: true }).catch((error) => console.warn("Firebase 병합 저장 실패", error));
-  }
 }
 
 function savePlannerFields(fields) {
@@ -673,7 +652,6 @@ taskForm.addEventListener("submit", (event) => {
   const title = document.querySelector("#taskTitle").value.trim();
   if (!title) return;
   const taskId = crypto.randomUUID();
-  pendingTaskIds.add(taskId);
   tasks.unshift(normalizeTask({ id: taskId, title, owner: "ME", priority: "medium", category: "general", due: selectedTaskDate, done: false, type: "task" }));
   taskForm.reset();
   setTaskFilter("all");
