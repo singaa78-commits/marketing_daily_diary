@@ -1231,23 +1231,28 @@ function prepareSite(item) {
   const insightResearchCategory = categories[9];
   const category = item.category === "편집/콘텐츠" ? "콘텐츠" : item.category === "SNS·비주얼" ? "레퍼런스 수집" : item.category;
   const normalizedCategory = categories.includes(category) ? category : "경쟁사 광고";
+  const effectiveSubcategory = item.subcategory || (normalizedCategory === insightResearchCategory ? notionSubcategories[item.name] || "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8" : "");
   return {
     id: item.id || crypto.randomUUID(),
     name: item.name || "",
     url: item.url || "",
     category: normalizedCategory,
-    subcategory: item.subcategory || (normalizedCategory === insightResearchCategory ? notionSubcategories[item.name] || "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8" : ""),
+    subcategory: effectiveSubcategory,
     description: item.description || "",
-    tags: normalizeTags(item, normalizedCategory),
+    tags: normalizeTags({ ...item, subcategory: effectiveSubcategory }, normalizedCategory),
     memo: normalizeMemo(item.memo || "", normalizedCategory),
     editor: item.editor || "Codex",
-    status: item.status || "검토 전",
-    editInfo: item.editInfo || "초기 추천 목록",
+    status: item.status || "\uAC80\uD1A0 \uC804",
+    editInfo: item.editInfo || "\uCD08\uAE30 \uCD94\uCC9C \uBAA9\uB85D",
     image: item.image || previewImageFor(item.url || "https://example.com"),
     updatedAt: item.updatedAt || new Date().toISOString(),
   };
 }
 function normalizeTags(item, category) {
+  const insightResearchCategory = categories[9];
+  const notionSection = category === insightResearchCategory ? notionSubcategories[item.name] || item.subcategory : "";
+  if (notionSection) return notionTagsFor(notionSection);
+
   const explicit = Array.isArray(item.tags)
     ? item.tags
     : typeof item.tags === "string"
@@ -1260,25 +1265,37 @@ function normalizeTags(item, category) {
     if (tests.some((test) => source.includes(test.toLowerCase()))) push(tag);
   };
 
-  push(category ? category.replace(" ????", "") : "");
+  push(category ? category.replace(" \uB808\uD37C\uB7F0\uC2A4", "") : "");
   push(item.subcategory || "");
-  add("???", ["brand", "branding", "identity", "rebrand", "???", "???", "?????", "??", "??"]);
-  add("???", ["type", "typo", "font", "fonts", "???", "??"]);
-  add("??", ["color", "colour", "palette", "??", "??", "??"]);
-  add("???", ["package", "packaging", "???"]);
-  add("??", ["ad", "ads", "advertising", "??", "campaign", "???"]);
-  add("??", ["video", "film", "shot", "vimeo", "youtube", "??", "??", "??"]);
-  add("??", ["motion", "animation", "lottie", "??", "?????"]);
-  add("?/UI", ["web", "ui", "ux", "site", "landing", "?", "??", "????", "???", "??", "??"]);
-  add("??", ["photo", "photography", "image", "ignant", "??", "??", "??", "??"]);
-  add("???", ["graphic", "poster", "visual", "???", "???", "???"]);
-  add("???", ["trend", "trends", "???"]);
-  add("???", ["research", "report", "data", "survey", "???", "???", "???", "??", "???"]);
-  add("??", ["copy", "email", "crm", "??", "???", "crm"]);
-  add("???", ["content", "contents", "instagram", "sns", "???", "???", "sns", "??", "??"]);
-  add("????", ["illustration", "illustrator", "draw", "????", "???"]);
+  add("\uBE0C\uB79C\uB529", ["brand", "branding", "identity", "rebrand", "\uBE0C\uB79C\uB529", "\uBE0C\uB79C\uB4DC", "\uC544\uC774\uB374\uD2F0\uD2F0", "\uB85C\uACE0", "\uC2EC\uBCFC"]);
+  add("\uD0C0\uC774\uD3EC", ["type", "typo", "font", "fonts", "\uD0C0\uC774\uD3EC", "\uD3F0\uD2B8"]);
+  add("\uCEEC\uB7EC", ["color", "colour", "palette", "\uCEEC\uB7EC", "\uC0C9\uAC10", "\uC0C9\uC0C1"]);
+  add("\uD328\uD0A4\uC9C0", ["package", "packaging", "\uD328\uD0A4\uC9C0"]);
+  add("\uAD11\uACE0", ["ad", "ads", "advertising", "\uAD11\uACE0", "campaign", "\uCEA0\uD398\uC778"]);
+  add("\uC601\uC0C1", ["video", "film", "shot", "vimeo", "youtube", "\uC601\uC0C1", "\uCD2C\uC601", "\uCF58\uD2F0"]);
+  add("\uBAA8\uC158", ["motion", "animation", "lottie", "\uBAA8\uC158", "\uC560\uB2C8\uBA54\uC774\uC158"]);
+  add("\uC6F9/UI", ["web", "ui", "ux", "site", "landing", "\uC6F9", "\uB79C\uB529", "\uC778\uD130\uB799\uC158", "\uC628\uBCF4\uB529", "\uACB0\uC81C", "\uAC00\uC785"]);
+  add("\uC0AC\uC9C4", ["photo", "photography", "image", "ignant", "\uC0AC\uC9C4", "\uC2A4\uD2F8", "\uD478\uB4DC", "\uC74C\uC2DD"]);
+  add("\uADF8\uB798\uD53D", ["graphic", "poster", "visual", "\uADF8\uB798\uD53D", "\uD3EC\uC2A4\uD130", "\uBE44\uC8FC\uC5BC"]);
+  add("\uD2B8\uB80C\uB4DC", ["trend", "trends", "\uD2B8\uB80C\uB4DC"]);
+  add("\uB9AC\uC11C\uCE58", ["research", "report", "data", "survey", "\uB9AC\uC11C\uCE58", "\uB9AC\uD3EC\uD2B8", "\uB370\uC774\uD130", "\uD1B5\uACC4", "\uAC80\uC0C9\uC5B4"]);
+  add("\uCE74\uD53C", ["copy", "email", "crm", "\uCE74\uD53C", "\uC774\uBA54\uC77C", "crm"]);
+  add("\uCF58\uD150\uCE20", ["content", "contents", "instagram", "sns", "\uCF58\uD150\uCE20", "\uC778\uC2A4\uD0C0", "sns", "\uB9B4\uC2A4", "\uC20F\uD3FC"]);
+  add("\uC77C\uB7EC\uC2A4\uD2B8", ["illustration", "illustrator", "draw", "\uC77C\uB7EC\uC2A4\uD2B8", "\uCE90\uB9AD\uD130"]);
 
   return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))].slice(0, 5);
+}
+
+function notionTagsFor(section) {
+  const base = [section, "\uC778\uC0AC\uC774\uD2B8", "\uD2B8\uB80C\uB4DC"];
+  const extras = {
+    "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8": ["\uB9C8\uCF00\uD305", "\uB9AC\uC11C\uCE58"],
+    "\uB9C8\uCF00\uD305 \uCEE4\uBBA4\uB2C8\uD2F0": ["\uCEE4\uBBA4\uB2C8\uD2F0", "\uC2E4\uBB34"],
+    "\uB9C8\uCF00\uD305 \uB9AC\uD3EC\uD2B8 \uCC38\uACE0": ["\uB9AC\uD3EC\uD2B8", "\uB370\uC774\uD130"],
+    "\uAD11\uACE0 \uB808\uD37C\uB7F0\uC2A4": ["\uAD11\uACE0", "\uB808\uD37C\uB7F0\uC2A4"],
+    "\uCE74\uD53C\uB77C\uC774\uD305 \uC544\uC774\uB514\uC5B4": ["\uCE74\uD53C", "\uC544\uC774\uB514\uC5B4"],
+  };
+  return [...new Set([...base, ...(extras[section] || [])])].slice(0, 5);
 }
 function normalizeMemo(memo, category) {
   const autoMemoPattern = new RegExp("\uC5D0\uC11C \uAC00\uC838\uC628 \uC778\uC2A4\uD0C0\uADF8\uB7A8 \uC2A4\uD06C\uB7A9\uC785\uB2C8\uB2E4|\uBA54\uBAA8\uB97C \uC5F4\uC5B4 \uD65C\uC6A9 \uD3EC\uC778\uD2B8\uB97C \uCD94\uAC00\uD558\uC138\uC694");
