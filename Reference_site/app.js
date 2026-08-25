@@ -1220,6 +1220,7 @@ function prepareSite(item) {
     category: normalizedCategory,
     subcategory: item.subcategory || "",
     description: item.description || "",
+    tags: normalizeTags(item, normalizedCategory),
     memo: normalizeMemo(item.memo || "", normalizedCategory),
     editor: item.editor || "Codex",
     status: item.status || "검토 전",
@@ -1227,6 +1228,39 @@ function prepareSite(item) {
     image: item.image || previewImageFor(item.url || "https://example.com"),
     updatedAt: item.updatedAt || new Date().toISOString(),
   };
+}
+function normalizeTags(item, category) {
+  const explicit = Array.isArray(item.tags)
+    ? item.tags
+    : typeof item.tags === "string"
+      ? item.tags.split(/[,#]/)
+      : [];
+  const source = [item.name, item.category, item.subcategory, item.description, item.memo].filter(Boolean).join(" ").toLowerCase();
+  const tags = [...explicit.map((tag) => String(tag).trim()).filter(Boolean)];
+  const push = (tag) => { if (tag && !tags.includes(tag)) tags.push(tag); };
+  const add = (tag, tests) => {
+    if (tests.some((test) => source.includes(test.toLowerCase()))) push(tag);
+  };
+
+  push(category ? category.replace(" ????", "") : "");
+  push(item.subcategory || "");
+  add("???", ["brand", "branding", "identity", "rebrand", "???", "???", "?????", "??", "??"]);
+  add("???", ["type", "typo", "font", "fonts", "???", "??"]);
+  add("??", ["color", "colour", "palette", "??", "??", "??"]);
+  add("???", ["package", "packaging", "???"]);
+  add("??", ["ad", "ads", "advertising", "??", "campaign", "???"]);
+  add("??", ["video", "film", "shot", "vimeo", "youtube", "??", "??", "??"]);
+  add("??", ["motion", "animation", "lottie", "??", "?????"]);
+  add("?/UI", ["web", "ui", "ux", "site", "landing", "?", "??", "????", "???", "??", "??"]);
+  add("??", ["photo", "photography", "image", "ignant", "??", "??", "??", "??"]);
+  add("???", ["graphic", "poster", "visual", "???", "???", "???"]);
+  add("???", ["trend", "trends", "???"]);
+  add("???", ["research", "report", "data", "survey", "???", "???", "???", "??", "???"]);
+  add("??", ["copy", "email", "crm", "??", "???", "crm"]);
+  add("???", ["content", "contents", "instagram", "sns", "???", "???", "sns", "??", "??"]);
+  add("????", ["illustration", "illustrator", "draw", "????", "???"]);
+
+  return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))].slice(0, 5);
 }
 function normalizeMemo(memo, category) {
   const autoMemoPattern = new RegExp("\uC5D0\uC11C \uAC00\uC838\uC628 \uC778\uC2A4\uD0C0\uADF8\uB7A8 \uC2A4\uD06C\uB7A9\uC785\uB2C8\uB2E4|\uBA54\uBAA8\uB97C \uC5F4\uC5B4 \uD65C\uC6A9 \uD3EC\uC778\uD2B8\uB97C \uCD94\uAC00\uD558\uC138\uC694");
@@ -1271,7 +1305,7 @@ function renderFolders() {
 function getFilteredSites() {
   return sites.filter((item) => {
     const matchesCategory = !activeCategory || item.category === activeCategory;
-    const text = [item.name, item.url, item.category, item.subcategory, item.description, item.memo, item.editInfo].join(" ").toLowerCase();
+    const text = [item.name, item.url, item.category, item.subcategory, ...(item.tags || []), item.description, item.memo, item.editInfo].join(" ").toLowerCase();
     return matchesCategory && (!query || text.includes(query));
   });
 }
@@ -1329,7 +1363,7 @@ function createSiteCard(item) {
       </a>
     `}
     <div class="bookmark-body">
-      ${item.subcategory ? `<span class="card-kicker">${escapeHtml(item.subcategory)}</span>` : ""}
+      <div class="card-tags">${(item.tags || []).map((tag) => `<span class="card-kicker">${escapeHtml(tag)}</span>`).join("")}</div>
       <div class="site-card-header"><h3>${escapeHtml(item.name)}</h3></div>
       <p>${escapeHtml(item.description)}</p>
       <div class="memo-box"><strong>메모</strong><p>${escapeHtml(item.memo || "")}</p></div>
@@ -1372,6 +1406,7 @@ function openEditor(id) {
   document.querySelector("#siteUrl").value = item?.url || "";
   document.querySelector("#siteDescription").value = item?.description || "";
   document.querySelector("#siteSubcategory").value = item?.subcategory || "";
+  document.querySelector("#siteTags").value = (item?.tags || []).join(", ");
   document.querySelector("#siteMemo").value = item?.memo || "";
   deleteButton.hidden = !item;
 
@@ -1391,6 +1426,7 @@ function saveSite(event) {
     category: document.querySelector("#siteCategory").value,
     description: document.querySelector("#siteDescription").value.trim(),
     subcategory: document.querySelector("#siteSubcategory").value.trim(),
+    tags: document.querySelector("#siteTags").value.split(/[,#]/).map((tag) => tag.trim()).filter(Boolean),
     memo: document.querySelector("#siteMemo").value.trim(),
     editor: "Codex",
     status: itemStatusById(id),

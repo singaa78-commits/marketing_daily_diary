@@ -270,7 +270,8 @@ input:focus, select:focus, textarea:focus { border-color: #141b16; box-shadow: 0
   padding: 0.85rem;
 }
 
-.card-kicker { display: inline-flex; width: max-content; max-width: 100%; border: 1px solid rgba(108, 74, 34, 0.24); border-radius: 999px; background: #f7eddb; color: #6c4a22; padding: 0.18rem 0.48rem; font-size: 10px; font-weight: 900; line-height: 1.2; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 0.32rem; min-width: 0; }
+.card-kicker { display: inline-flex; width: max-content; max-width: 100%; border: 1px solid rgba(108, 74, 34, 0.24); border-radius: 999px; background: #f7eddb; color: #6c4a22; padding: 0.18rem 0.48rem; font-size: 10px; font-weight: 900; line-height: 1.2; overflow-wrap: anywhere; }
 .site-card-header { display: flex; justify-content: space-between; gap: 0.75rem; align-items: start; }
 .site-card h3 { margin: 0; font-size: 14px; line-height: 1.38; overflow-wrap: anywhere; word-break: keep-all; }
 .site-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; word-break: keep-all; }
