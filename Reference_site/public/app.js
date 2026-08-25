@@ -22,6 +22,7 @@ const categories = [
   "영상/모션 레퍼런스",
   "사진/푸드 비주얼",
   "타이포/포스터",
+  "에디토리얼 레퍼런스",
 ];
 
 const folderColors = [
@@ -46,6 +47,7 @@ const folderColors = [
   "#8b8ecf",
   "#7eaa78",
   "#d4b34f",
+  "#efb06e",
 ];
 
 const initialSites = [
@@ -413,6 +415,164 @@ const refSearchSites = [
     "subcategory": "로고",
     "description": "로고·심볼 레퍼런스",
     "memo": "추천도: ★★★★☆"
+  }
+];
+
+const editorialReferenceSites = [
+  {
+    "name": "HEYPOP Gourmet",
+    "url": "https://heypop.kr/now/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "푸드/F&B",
+    "description": "식품·F&B 브랜드, 공간, 팝업, 메뉴, 라이프스타일 트렌드를 함께 볼 수 있는 헤이팝 에디토리얼 페이지입니다.",
+    "memo": "신제품 런칭, 푸드 팝업, 공간 연출, SNS 소재 리서치에 좋습니다.",
+    "tags": [
+      "푸드",
+      "F&B",
+      "공간",
+      "팝업",
+      "트렌드"
+    ]
+  },
+  {
+    "name": "LongBlack",
+    "url": "https://www.longblack.co/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "브랜드 스토리",
+    "description": "브랜드, 비즈니스, 라이프스타일을 깊이 읽는 에디토리얼 플랫폼입니다.",
+    "memo": "브랜드 성장 배경, 창업자 인사이트, F&B 사례를 깊게 볼 때 활용.",
+    "tags": [
+      "브랜딩",
+      "브랜드 스토리",
+      "비즈니스",
+      "F&B"
+    ]
+  },
+  {
+    "name": "디에디트",
+    "url": "https://the-edit.co.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "컬처/라이프스타일",
+    "description": "제품, 라이프스타일, 브랜드를 에디터의 톤으로 풀어내는 국내 미디어입니다.",
+    "memo": "제품 표현법, 콘텐츠 톤, 브랜드 소개 방식 참고.",
+    "tags": [
+      "콘텐츠",
+      "브랜딩",
+      "제품",
+      "라이프스타일"
+    ]
+  },
+  {
+    "name": "B Magazine",
+    "url": "https://magazine-b.com/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "브랜드 스토리",
+    "description": "한 브랜드를 깊게 분석하고 전략, 제품, 공간, 철학을 함께 보여줍니다.",
+    "memo": "브랜드 하나를 전략적으로 깊게 보고 싶을 때 저장.",
+    "tags": [
+      "브랜딩",
+      "브랜드 스토리",
+      "전략",
+      "공간"
+    ]
+  },
+  {
+    "name": "DESIGN+ / 디자인프레스",
+    "url": "https://design.co.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "디자인/공간",
+    "description": "디자인, 브랜딩, 공간, 팝업, 패키지 사례를 볼 수 있는 디자인 미디어입니다.",
+    "memo": "브랜드 디자인, 전시, 공간 트렌드 참고.",
+    "tags": [
+      "디자인",
+      "브랜딩",
+      "공간",
+      "팝업"
+    ]
+  },
+  {
+    "name": "월간 디자인",
+    "url": "https://mdesign.designhouse.co.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "디자인/공간",
+    "description": "그래픽, 패키지, 브랜딩, 공간 레퍼런스를 찾기 좋은 디자인 전문 미디어입니다.",
+    "memo": "국내 디자인 업계 흐름과 사례 확인용.",
+    "tags": [
+      "디자인",
+      "그래픽",
+      "패키지",
+      "브랜딩"
+    ]
+  },
+  {
+    "name": "VISLA Magazine",
+    "url": "https://visla.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "컬처/라이프스타일",
+    "description": "문화, 패션, 음악, 브랜드 이슈를 감도 있게 다루는 미디어입니다.",
+    "memo": "젊은 문화, 콜라보, 콘텐츠 감도 참고.",
+    "tags": [
+      "컬처",
+      "브랜딩",
+      "콜라보",
+      "콘텐츠"
+    ]
+  },
+  {
+    "name": "Eyesmag",
+    "url": "https://www.eyesmag.com/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "컬처/라이프스타일",
+    "description": "패션, 라이프스타일, 브랜드 뉴스를 빠르게 볼 수 있는 미디어입니다.",
+    "memo": "화제성 있는 콜라보, 신제품, 팝업 탐색용.",
+    "tags": [
+      "컬처",
+      "패션",
+      "콜라보",
+      "팝업"
+    ]
+  },
+  {
+    "name": "Hypebeast Korea",
+    "url": "https://hypebeast.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "컬처/라이프스타일",
+    "description": "브랜드, 컬처, 콜라보, 신제품 이슈를 빠르게 확인할 수 있습니다.",
+    "memo": "화제성 있는 협업, 제품 출시, 컬처 트렌드 확인.",
+    "tags": [
+      "컬처",
+      "브랜딩",
+      "콜라보",
+      "트렌드"
+    ]
+  },
+  {
+    "name": "더퍼스트미디어",
+    "url": "https://www.thefirstmedia.net/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "브랜드 스토리",
+    "description": "국내 브랜드, 라이프스타일, 비즈니스 사례를 찾을 수 있는 미디어입니다.",
+    "memo": "국내 브랜드 사례와 현장형 기사 참고.",
+    "tags": [
+      "브랜딩",
+      "국내사례",
+      "비즈니스"
+    ]
+  },
+  {
+    "name": "인사이트플랫폼",
+    "url": "https://www.insightplatform.co.kr/",
+    "category": "에디토리얼 레퍼런스",
+    "subcategory": "푸드/F&B",
+    "description": "F&B 마케팅, 외식, 푸드 이커머스, 푸드 비즈니스 인사이트를 찾기 좋은 사이트입니다.",
+    "memo": "식품 브랜드, 외식, 푸드 시장 리서치를 할 때 우선 확인.",
+    "tags": [
+      "F&B",
+      "푸드",
+      "마케팅",
+      "리서치",
+      "외식"
+    ]
   }
 ];
 
@@ -1209,7 +1369,7 @@ function site(name, url, category, description, memo = "", status = "검토 전"
 }
 
 function loadSites() {
-  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...refSearchSites, ...instagramSites].map(prepareSite);
+  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...refSearchSites, ...editorialReferenceSites, ...instagramSites].map(prepareSite);
   const saved = localStorage.getItem(storageKey);
   if (!saved) return defaults;
 
@@ -1347,7 +1507,7 @@ function getFilteredSites() {
 
 function renderCards(items) {
   siteGrid.innerHTML = "";
-  const isGroupedFolder = (activeCategory === categories[9] || activeCategory === categories[10]) && !query;
+  const isGroupedFolder = (activeCategory === categories[9] || activeCategory === categories[10] || activeCategory === "\uC5D0\uB514\uD1A0\uB9AC\uC5BC \uB808\uD37C\uB7F0\uC2A4") && !query;
   siteGrid.classList.toggle("is-grouped", isGroupedFolder);
   emptyState.hidden = items.length > 0;
   activeCategoryLabel.textContent = query ? "Search Result" : "Folder";
