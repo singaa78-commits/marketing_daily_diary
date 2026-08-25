@@ -4,7 +4,7 @@ const categories = [
   "경쟁사 광고",
   "캠페인 아이디어",
   "영상 레퍼런스",
-  "SNS·비주얼",
+  "레퍼런스 수집",
   "디자인",
   "상세·랜딩",
   "카피·CRM",
@@ -46,8 +46,8 @@ const initialSites = [
   site("Vimeo Staff Picks", "https://vimeo.com/channels/staffpicks", "영상 레퍼런스", "브랜드 필름, 무드 영상, 애니메이션 등 완성도 높은 영상을 찾습니다.", "연출 톤, 리듬, 미술, 편집감을 참고합니다."),
   site("Shots", "https://shots.net/", "영상 레퍼런스", "광고 영상 제작물과 연출, 촬영, 미술 사례를 살펴봅니다.", "TVC나 브랜드 필름 콘셉트 보강용입니다."),
   site("YouTube", "https://youtube.com/", "영상 레퍼런스", "case study, product film, food commercial 같은 검색어로 실제 사례를 찾습니다.", "영어 검색어 조합을 메모해두면 결과가 좋아집니다."),
-  site("Pinterest", "https://pinterest.com/", "SNS·비주얼", "무드보드, 촬영 톤, 그래픽 스타일, 푸드 캠페인 비주얼을 모읍니다.", "검색어는 한국어보다 영어가 더 넓게 잡힙니다."),
-  site("Instagram", "https://instagram.com/", "SNS·비주얼", "글로벌 브랜드의 SNS 운영 방식, 피드 구성, 릴스 톤을 관찰합니다.", "브랜드별 저장 컬렉션을 따로 만들면 편합니다."),
+  site("Pinterest", "https://pinterest.com/", "레퍼런스 수집", "무드보드, 촬영 톤, 그래픽 스타일, 푸드 캠페인 비주얼을 모읍니다.", "검색어는 한국어보다 영어가 더 넓게 잡힙니다."),
+  site("Instagram", "https://instagram.com/", "레퍼런스 수집", "글로벌 브랜드의 SNS 운영 방식, 피드 구성, 릴스 톤을 관찰합니다.", "브랜드별 저장 컬렉션을 따로 만들면 편합니다."),
   site("Behance", "https://behance.net/", "디자인", "브랜딩, 패키지, 캠페인 디자인 프로젝트를 포트폴리오 형태로 탐색합니다.", "브랜드 아이덴티티와 패키지 조사에 특히 좋습니다."),
   site("Awwwards", "https://awwwards.com/", "디자인", "글로벌 웹사이트와 인터랙션 디자인 트렌드를 확인합니다.", "비주얼은 강하지만 실무 랜딩 구조는 따로 검토합니다."),
   site("SiteSee", "https://sitesee.co/", "디자인", "감도 높은 웹디자인 아카이브를 모아볼 수 있습니다.", "톤앤매너가 좋은 사이트 탐색용입니다."),
@@ -869,7 +869,7 @@ function loadSites() {
 }
 
 function prepareSite(item) {
-  const category = item.category === "편집/콘텐츠" ? "콘텐츠" : item.category;
+  const category = item.category === "편집/콘텐츠" ? "콘텐츠" : item.category === "SNS·비주얼" ? "레퍼런스 수집" : item.category;
   const normalizedCategory = categories.includes(category) ? category : "경쟁사 광고";
   return {
     id: item.id || crypto.randomUUID(),
