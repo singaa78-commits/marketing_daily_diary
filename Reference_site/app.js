@@ -14,6 +14,9 @@ const categories = [
   "콘텐츠",
   "편집",
   "일러스트",
+  "검색/키워드 리서치",
+  "소비자/시장 리서치",
+  "경쟁사 분석",
 ];
 
 const folderColors = [
@@ -30,6 +33,9 @@ const folderColors = [
   "#b8d46b",
   "#a8bfd9",
   "#efc8bc",
+  "#7ab3a7",
+  "#e08a6a",
+  "#9f8fc8",
 ];
 
 const initialSites = [
@@ -72,6 +78,137 @@ const initialSites = [
   site("Loose Drawing", "https://loosedrawing.com/", "일러스트", "부드럽고 손그림 느낌의 무료 일러스트를 제공합니다.", "식품, 생활, 감성 콘텐츠에 잘 맞습니다."),
   site("DrawKit", "https://www.drawkit.com/", "일러스트", "2D, 3D, 아이콘, 애니메이션 등 다양한 일러스트 세트를 제공합니다.", "무료와 유료가 섞여 있어 프로젝트별 라이선스를 확인합니다."),
   site("Storyset", "https://storyset.com/", "일러스트", "상황별 일러스트를 색상과 레이어를 바꿔 내려받을 수 있습니다.", "Freepik 라이선스와 출처 표기 여부를 확인합니다."),
+];
+
+const trendResearchSites = [
+  {
+    "name": "네이버 데이터랩",
+    "url": "https://datalab.naver.com/?utm_source=chatgpt.com",
+    "category": "검색/키워드 리서치",
+    "subcategory": "검색 트렌드",
+    "description": "검색어 추이, 쇼핑 관심도, 연령·성별 비교",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Google Trends",
+    "url": "https://trends.google.com/?utm_source=chatgpt.com",
+    "category": "검색/키워드 리서치",
+    "subcategory": "검색 트렌드",
+    "description": "키워드 관심도, 시즌성, 국가별 비교",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "오픈서베이 트렌드 리포트",
+    "url": "https://blog.opensurvey.co.kr/?utm_source=chatgpt.com",
+    "category": "소비자/시장 리서치",
+    "subcategory": "소비자 리서치",
+    "description": "식품·쇼핑·소비자 행동 리포트",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Similarweb",
+    "url": "https://www.similarweb.com/?utm_source=chatgpt.com",
+    "category": "경쟁사 분석",
+    "subcategory": "경쟁사 분석",
+    "description": "경쟁사 웹사이트 트래픽·유입 채널 추정",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Exploding Topics",
+    "url": "https://explodingtopics.com/?utm_source=chatgpt.com",
+    "category": "트렌드",
+    "subcategory": "트렌드 발굴",
+    "description": "아직 대중화되지 않은 상승 키워드 발굴",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "AnswerThePublic",
+    "url": "https://answerthepublic.com/?utm_source=chatgpt.com",
+    "category": "검색/키워드 리서치",
+    "subcategory": "키워드",
+    "description": "소비자가 실제로 검색하는 질문 탐색",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "AlsoAsked",
+    "url": "https://alsoasked.com/?utm_source=chatgpt.com",
+    "category": "검색/키워드 리서치",
+    "subcategory": "검색 아이디어",
+    "description": "연관 질문·콘텐츠 주제 발굴",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Pinterest Trends",
+    "url": "https://trends.pinterest.com/?utm_source=chatgpt.com",
+    "category": "트렌드",
+    "subcategory": "비주얼 트렌드",
+    "description": "디자인·음식·라이프스타일 검색 트렌드",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Are.na",
+    "url": "https://www.are.na/?utm_source=chatgpt.com",
+    "category": "레퍼런스 수집",
+    "subcategory": "레퍼런스 수집",
+    "description": "광고·디자인·문화 레퍼런스 수집",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Savee",
+    "url": "https://savee.it/?utm_source=chatgpt.com",
+    "category": "레퍼런스 수집",
+    "subcategory": "비주얼 큐레이션",
+    "description": "감도 높은 그래픽·사진 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "The Brand Identity",
+    "url": "https://the-brandidentity.com/?utm_source=chatgpt.com",
+    "category": "디자인",
+    "subcategory": "브랜딩",
+    "description": "글로벌 브랜드·패키지·그래픽 사례",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Brand New",
+    "url": "https://www.underconsideration.com/brandnew/?utm_source=chatgpt.com",
+    "category": "디자인",
+    "subcategory": "브랜딩",
+    "description": "글로벌 리브랜딩 사례 분석",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Fonts In Use",
+    "url": "https://fontsinuse.com/?utm_source=chatgpt.com",
+    "category": "디자인",
+    "subcategory": "타이포",
+    "description": "실제 브랜드·광고의 폰트 활용 사례",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Typewolf",
+    "url": "https://www.typewolf.com/?utm_source=chatgpt.com",
+    "category": "디자인",
+    "subcategory": "타이포",
+    "description": "웹·브랜드 타이포 조합 참고",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Coolors",
+    "url": "https://coolors.co/?utm_source=chatgpt.com",
+    "category": "디자인",
+    "subcategory": "컬러",
+    "description": "브랜드·캠페인 컬러 조합 만들기",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Statista",
+    "url": "https://www.statista.com/?utm_source=chatgpt.com",
+    "category": "소비자/시장 리서치",
+    "subcategory": "데이터/통계",
+    "description": "산업·시장 규모·소비자 데이터",
+    "memo": "추천도: ★★★★☆"
+  }
 ];
 
 const notionSites = [
@@ -850,7 +987,7 @@ function site(name, url, category, description, memo = "", status = "검토 전"
 }
 
 function loadSites() {
-  const defaults = [...initialSites, ...notionSites, ...instagramSites].map(prepareSite);
+  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...instagramSites].map(prepareSite);
   const saved = localStorage.getItem(storageKey);
   if (!saved) return defaults;
 
