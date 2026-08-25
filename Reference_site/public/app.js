@@ -17,6 +17,11 @@ const categories = [
   "검색/키워드 리서치",
   "소비자/시장 리서치",
   "경쟁사 분석",
+  "브랜딩/그래픽",
+  "웹/UI 레퍼런스",
+  "영상/모션 레퍼런스",
+  "사진/푸드 비주얼",
+  "타이포/포스터",
 ];
 
 const folderColors = [
@@ -36,6 +41,11 @@ const folderColors = [
   "#7ab3a7",
   "#e08a6a",
   "#9f8fc8",
+  "#d86f55",
+  "#5f9fc8",
+  "#8b8ecf",
+  "#7eaa78",
+  "#d4b34f",
 ];
 
 const initialSites = [
@@ -207,6 +217,201 @@ const trendResearchSites = [
     "category": "소비자/시장 리서치",
     "subcategory": "데이터/통계",
     "description": "산업·시장 규모·소비자 데이터",
+    "memo": "추천도: ★★★★☆"
+  }
+];
+
+const refSearchSites = [
+  {
+    "name": "Identity Designed",
+    "url": "https://identitydesigned.com/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "브랜딩",
+    "description": "브랜드 아이덴티티 전체 시스템 사례",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Brand Archive",
+    "url": "https://brandarchive.xyz/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "브랜딩",
+    "description": "글로벌 브랜드 자산 아카이브",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Rebrand Gallery",
+    "url": "https://rebrand.gallery/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "브랜딩",
+    "description": "리브랜딩 전후 사례",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Mindsparkle Mag",
+    "url": "https://mindsparklemag.com/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "브랜딩",
+    "description": "브랜딩·패키지·그래픽 큐레이션",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Inspiration Grid",
+    "url": "https://theinspirationgrid.com/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "그래픽",
+    "description": "포스터·타이포·패키지·광고 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Abduzeedo",
+    "url": "https://abduzeedo.com/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "그래픽",
+    "description": "그래픽·3D·브랜딩·디지털 아트",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Visual Journal",
+    "url": "https://visualjournal.it/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "그래픽",
+    "description": "아트디렉션·편집디자인 레퍼런스",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Poster House",
+    "url": "https://posterhouse.org/",
+    "category": "타이포/포스터",
+    "subcategory": "포스터",
+    "description": "포스터 구성·타이포·아트디렉션",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "SiteInspire",
+    "url": "https://www.siteinspire.com/",
+    "category": "웹/UI 레퍼런스",
+    "subcategory": "웹",
+    "description": "깔끔한 브랜드·에디토리얼 웹 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Refs.Gallery",
+    "url": "https://refs.gallery/",
+    "category": "웹/UI 레퍼런스",
+    "subcategory": "웹",
+    "description": "웹을 스타일·모션·기능별로 탐색",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Refero",
+    "url": "https://refero.design/",
+    "category": "웹/UI 레퍼런스",
+    "subcategory": "웹/UI",
+    "description": "실제 제품 UI·웹 화면 레퍼런스",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Page Flows",
+    "url": "https://pageflows.com/",
+    "category": "웹/UI 레퍼런스",
+    "subcategory": "UI 플로우",
+    "description": "가입·결제·온보딩 등 실제 UX 플로우",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Motionographer",
+    "url": "https://motionographer.com/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "모션",
+    "description": "모션그래픽·광고영상·타이틀 시퀀스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "LottieFiles",
+    "url": "https://lottiefiles.com/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "모션",
+    "description": "마이크로 모션·UI 애니메이션 레퍼런스",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "ShotDeck",
+    "url": "https://shotdeck.com/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "영상",
+    "description": "영화 컷 기준 조명·구도·색감 검색",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "FilmGrab",
+    "url": "https://film-grab.com/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "영상",
+    "description": "영화 스틸컷 무드·촬영 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Eyecandy",
+    "url": "https://eyecannndy.com/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "영상",
+    "description": "카메라워크·편집 기법별 영상 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "ShotBook",
+    "url": "https://shotbook.art/",
+    "category": "영상/모션 레퍼런스",
+    "subcategory": "영상",
+    "description": "영상 컷·광고·편집 레퍼런스 수집",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Ignant",
+    "url": "https://www.ignant.com/",
+    "category": "사진/푸드 비주얼",
+    "subcategory": "사진",
+    "description": "감도 높은 사진·아트·에디토리얼 레퍼런스",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "It's Nice That",
+    "url": "https://www.itsnicethat.com/",
+    "category": "사진/푸드 비주얼",
+    "subcategory": "사진",
+    "description": "크리에이티브·사진·디자인 사례",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Creative Boom",
+    "url": "https://www.creativeboom.com/",
+    "category": "사진/푸드 비주얼",
+    "subcategory": "사진",
+    "description": "사진·브랜드·광고·일러스트 사례",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "World Brand Design Society",
+    "url": "https://worldbranddesign.com/",
+    "category": "제품·패키지",
+    "subcategory": "패키지",
+    "description": "패키지·식품 브랜드 디자인",
+    "memo": "추천도: ★★★★★"
+  },
+  {
+    "name": "Typographic Posters",
+    "url": "https://www.typographicposters.com/",
+    "category": "타이포/포스터",
+    "subcategory": "타이포",
+    "description": "타이포 중심 포스터 레퍼런스",
+    "memo": "추천도: ★★★★☆"
+  },
+  {
+    "name": "Logggos",
+    "url": "https://www.logggos.club/",
+    "category": "브랜딩/그래픽",
+    "subcategory": "로고",
+    "description": "로고·심볼 레퍼런스",
     "memo": "추천도: ★★★★☆"
   }
 ];
@@ -987,7 +1192,7 @@ function site(name, url, category, description, memo = "", status = "검토 전"
 }
 
 function loadSites() {
-  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...instagramSites].map(prepareSite);
+  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...refSearchSites, ...instagramSites].map(prepareSite);
   const saved = localStorage.getItem(storageKey);
   if (!saved) return defaults;
 
