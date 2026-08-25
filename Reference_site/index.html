@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Marketing Reference Desk</title>
+    <meta name="description" content="마케팅 레퍼런스를 폴더별로 모아 관리하는 링크 모음집" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Reference Desk</p>
+        <h1>마케팅 레퍼런스 폴더</h1>
+      </div>
+      <button class="primary-button" id="addSiteButton" type="button">새 링크 추가</button>
+    </header>
+
+    <main>
+      <section class="controls" aria-label="검색과 보기 설정">
+        <label class="search-box">
+          <span>검색</span>
+          <input id="searchInput" type="search" placeholder="사이트명, 설명, 메모 검색" />
+        </label>
+        <div class="view-actions">
+          <button class="ghost-button" id="allFoldersButton" type="button">전체 폴더</button>
+          <button class="ghost-button" id="resetButton" type="button">기본 목록 복원</button>
+        </div>
+      </section>
+
+      <section class="folder-board" id="folderBoard" aria-label="레퍼런스 폴더"></section>
+
+      <section class="content-area" id="contentArea" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" id="activeCategoryLabel">폴더</p>
+            <h2 id="resultTitle">레퍼런스</h2>
+          </div>
+          <div class="section-actions">
+            <button class="primary-button" id="addInFolderButton" type="button">링크 추가</button>
+            <button class="ghost-button" id="backToFoldersButton" type="button">폴더로 돌아가기</button>
+          </div>
+        </div>
+        <div class="cards-grid" id="siteGrid"></div>
+        <p class="empty-state" id="emptyState" hidden>조건에 맞는 링크가 없습니다.</p>
+      </section>
+    </main>
+
+    <dialog class="editor" id="siteDialog">
+      <form id="siteForm" method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Edit Reference</p>
+            <h2 id="dialogTitle">링크 추가</h2>
+          </div>
+          <button class="icon-button" id="closeDialogButton" type="button" aria-label="닫기">x</button>
+        </div>
+
+        <input id="siteId" type="hidden" />
+
+        <label>사이트명<input id="siteName" required /></label>
+        <label>링크<input id="siteUrl" type="url" required placeholder="https://example.com" /></label>
+        <label>카테고리<select id="siteCategory" required></select></label>
+        <label>세부 카테고리<input id="siteSubcategory" placeholder="예: 요리계정, 영상/편집, 트렌드 모음" /></label>
+        <label>사이트 설명<textarea id="siteDescription" required rows="3"></textarea></label>
+        <label>메모<textarea id="siteMemo" rows="3" placeholder="우리 팀에서 어떻게 활용할지 적어두세요"></textarea></label>
+
+        <div class="dialog-actions">
+          <button class="danger-button" id="deleteButton" type="button">삭제</button>
+          <div>
+            <button class="ghost-button" id="cancelButton" type="button">취소</button>
+            <button class="primary-button" type="submit">저장</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
