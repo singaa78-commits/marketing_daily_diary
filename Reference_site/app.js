@@ -434,6 +434,23 @@ const notionSites = [
   site("카피가 강한 세상에", "http://www.adim21.co.kr/?ref=ko-blog.smore.im", "인사이트·트렌드 리서치", "카피라이팅 아이디어를 얻기 위한 광고 카피 참고 사이트입니다.", "카피라이팅 아이디어 섹션에서 가져온 링크입니다."),
 ];
 
+const notionSubcategories = {
+  "\uC624\uD508\uC560\uC988": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uC11C\uD54F": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uD37C\uBE14\uB9AC": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uCE90\uB9BF": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uC0DD\uAC01\uB178\uD2B8 \uBE14\uB85C\uADF8": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uCF58\uD150\uD0C0 \uB9E4\uAC70\uC9C4": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uC2A4\uBAA8\uC5B4 \uBE14\uB85C\uADF8": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uB4DC": "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8",
+  "\uC544\uC774\uBCF4\uC2A4": "\uB9C8\uCF00\uD305 \uCEE4\uBBA4\uB2C8\uD2F0",
+  "DMC\uB9AC\uD3EC\uD2B8": "\uB9C8\uCF00\uD305 \uB9AC\uD3EC\uD2B8 \uCC38\uACE0",
+  "\uBA54\uC870\uBBF8\uB514\uC5B4": "\uB9C8\uCF00\uD305 \uB9AC\uD3EC\uD2B8 \uCC38\uACE0",
+  "\uB098\uC2A4\uBBF8\uB514\uC5B4": "\uB9C8\uCF00\uD305 \uB9AC\uD3EC\uD2B8 \uCC38\uACE0",
+  "\uBA54\uD0C0\uAD11\uACE0 \uB77C\uC774\uBE0C\uB7EC\uB9AC": "\uAD11\uACE0 \uB808\uD37C\uB7F0\uC2A4",
+  "\uC560\uC988\uC624\uBE0C\uC6D4\uB4DC": "\uAD11\uACE0 \uB808\uD37C\uB7F0\uC2A4",
+  "\uCE74\uD53C\uAC00 \uAC15\uD55C \uC138\uC0C1\uC5D0": "\uCE74\uD53C\uB77C\uC774\uD305 \uC544\uC774\uB514\uC5B4",
+};
 const instagramSites = [
   {
     "name": "Instagram Reference",
@@ -1211,6 +1228,7 @@ function loadSites() {
 }
 
 function prepareSite(item) {
+  const insightResearchCategory = categories[9];
   const category = item.category === "편집/콘텐츠" ? "콘텐츠" : item.category === "SNS·비주얼" ? "레퍼런스 수집" : item.category;
   const normalizedCategory = categories.includes(category) ? category : "경쟁사 광고";
   return {
@@ -1218,7 +1236,7 @@ function prepareSite(item) {
     name: item.name || "",
     url: item.url || "",
     category: normalizedCategory,
-    subcategory: item.subcategory || "",
+    subcategory: item.subcategory || (normalizedCategory === insightResearchCategory ? notionSubcategories[item.name] || "\uB9C8\uCF00\uD305 \uC778\uC0AC\uC774\uD2B8" : ""),
     description: item.description || "",
     tags: normalizeTags(item, normalizedCategory),
     memo: normalizeMemo(item.memo || "", normalizedCategory),
@@ -1312,13 +1330,13 @@ function getFilteredSites() {
 
 function renderCards(items) {
   siteGrid.innerHTML = "";
-  const isContentFolder = activeCategory === categories[10] && !query;
-  siteGrid.classList.toggle("is-grouped", isContentFolder);
+  const isGroupedFolder = (activeCategory === categories[9] || activeCategory === categories[10]) && !query;
+  siteGrid.classList.toggle("is-grouped", isGroupedFolder);
   emptyState.hidden = items.length > 0;
   activeCategoryLabel.textContent = query ? "Search Result" : "Folder";
   resultTitle.textContent = query ? `검색 결과 ${items.length}개` : `${activeCategory} 링크 ${items.length}개`;
 
-  if (isContentFolder) {
+  if (isGroupedFolder) {
     renderGroupedCards(items);
     return;
   }
