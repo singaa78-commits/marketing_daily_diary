@@ -23,6 +23,7 @@ const categories = [
   "사진/푸드 비주얼",
   "타이포/포스터",
   "에디토리얼 레퍼런스",
+  "AI프롬프트",
 ];
 
 const folderColors = [
