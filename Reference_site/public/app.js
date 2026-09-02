@@ -1364,27 +1364,65 @@ form.addEventListener("submit", saveSite);
 deleteButton.addEventListener("click", deleteSite);
 
 render();
+syncFromApi();
 
 function site(name, url, category, description, memo = "", status = "검토 전") {
   return { name, url, category, description, memo, status };
 }
 
+function buildDefaults() {
+  return [...initialSites, ...notionSites, ...trendResearchSites, ...refSearchSites, ...editorialReferenceSites, ...instagramSites].map(prepareSite);
+}
+
+function mergeWithDefaults(savedSites) {
+  const defaults = buildDefaults();
+  const savedUrls = new Set(savedSites.map((item) => item.url));
+  const missingDefaults = defaults.filter((item) => !savedUrls.has(item.url));
+  return [...savedSites, ...missingDefaults];
+}
+
 function loadSites() {
-  const defaults = [...initialSites, ...notionSites, ...trendResearchSites, ...refSearchSites, ...editorialReferenceSites, ...instagramSites].map(prepareSite);
   const saved = localStorage.getItem(storageKey);
-  if (!saved) return defaults;
+  if (!saved) return mergeWithDefaults([]);
 
   try {
     const parsed = JSON.parse(saved);
-    if (!Array.isArray(parsed)) return defaults;
+    if (!Array.isArray(parsed)) return mergeWithDefaults([]);
     const savedSites = parsed
       .map(prepareSite)
       .filter((item) => item.url !== "https://app.notion.com/p/2cd426a205fc80dbb31fc3fc22073624");
-    const savedUrls = new Set(savedSites.map((item) => item.url));
-    const missingDefaults = defaults.filter((item) => !savedUrls.has(item.url));
-    return [...savedSites, ...missingDefaults];
+    return mergeWithDefaults(savedSites);
   } catch {
-    return defaults;
+    return mergeWithDefaults([]);
+  }
+}
+
+const sitesApiUrl = "/api/sites";
+
+async function syncFromApi() {
+  try {
+    const response = await fetch(sitesApiUrl);
+    if (!response.ok) throw new Error(`sync failed: ${response.status}`);
+    const remoteItems = await response.json();
+    if (!Array.isArray(remoteItems)) throw new Error("unexpected response shape");
+    sites = mergeWithDefaults(remoteItems.map(prepareSite));
+    localStorage.setItem(storageKey, JSON.stringify(sites));
+    render();
+  } catch (err) {
+    console.warn("Google Sheet 동기화에 실패해 로컬 저장 데이터를 표시합니다.", err);
+  }
+}
+
+async function postToApi(payload) {
+  try {
+    const response = await fetch(sitesApiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(`sync failed: ${response.status}`);
+  } catch (err) {
+    console.warn("Google Sheet에 변경사항을 저장하지 못했습니다. 이 브라우저에는 반영되어 있습니다.", err);
   }
 }
 
@@ -1636,6 +1674,7 @@ function saveSite(event) {
   else sites = [next, ...sites];
   activeCategory = next.category;
   persist();
+  postToApi({ action: "upsert", item: next });
   dialog.close();
   render();
 }
@@ -1654,6 +1693,7 @@ function deleteSiteById(id, closeDialog = false) {
   if (!confirm("\uC774 \uB9C1\uD06C\uB97C \uC0AD\uC81C\uD560\uAE4C\uC694?")) return;
   sites = sites.filter((entry) => entry.id !== id);
   persist();
+  postToApi({ action: "delete", id });
   if (closeDialog) dialog.close();
   render();
 }
