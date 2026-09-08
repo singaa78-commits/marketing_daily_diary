@@ -159,7 +159,8 @@ function applyPlannerState(state) {
   tasks = (Array.isArray(state.tasks) ? state.tasks : []).map(normalizeTask);
   calendarEvents = normalizeCalendarEvents(state.calendarEvents);
   meetingChecklists = state.meetingChecklists && typeof state.meetingChecklists === "object" ? state.meetingChecklists : {};
-  memoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  const incomingMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
+  memoChecks = backfillWhenAnchors(incomingMemoChecks);
   quickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
   writeStoredJson("leaderDashboardTasks", tasks);
   writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
@@ -168,6 +169,7 @@ function applyPlannerState(state) {
   writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   render();
   isApplyingRemoteState = false;
+  if (memoChecks !== incomingMemoChecks) saveMemoChecks();
 }
 
 function savePlannerFields(fields) {
@@ -210,7 +212,7 @@ function saveCalendarEvents() {
 
 function loadMemoChecks() {
   const items = readStoredJson("leaderDashboardMemoChecks", []);
-  return Array.isArray(items) ? items : [];
+  return backfillWhenAnchors(Array.isArray(items) ? items : []);
 }
 
 function saveMemoChecks() {
@@ -355,6 +357,21 @@ function computeWhenAnchor(when) {
   if (when === "이번 달") return { unit: "month", key: formatMonthKey(baseToday) };
   if (when === "다음 달") return { unit: "month", key: formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1)) };
   return null;
+}
+
+// One-time migration for items saved before whenUnit/whenKey existed: since their
+// original creation date was never stored, anchor them relative to today instead of
+// leaving them frozen on their original label forever.
+function backfillWhenAnchors(items) {
+  let changed = false;
+  const next = items.map((item) => {
+    if (item.whenUnit || item.whenKey || !item.when) return item;
+    const anchor = computeWhenAnchor(item.when);
+    if (!anchor) return item;
+    changed = true;
+    return { ...item, whenUnit: anchor.unit, whenKey: anchor.key };
+  });
+  return changed ? next : items;
 }
 
 function formatWhenLabel(item) {
