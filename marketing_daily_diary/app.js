@@ -280,15 +280,17 @@ function render() {
 
 
 function renderMemoChecks() {
-  memoCheckList.innerHTML = memoChecks.map((item) => `
-    <li class="memo-check-item ${item.done ? "is-done" : ""}">
-      <button class="memo-toggle" type="button" data-memo-toggle="${item.id}">${item.done ? "✓" : ""}</button>
+  // Checked items move to the "월별 진행된 일" panel instead of staying listed here.
+  const openItems = memoChecks.filter((item) => !item.done);
+  memoCheckList.innerHTML = openItems.map((item) => `
+    <li class="memo-check-item">
+      <button class="memo-toggle" type="button" data-memo-toggle="${item.id}"></button>
       <span class="memo-text">${item.text}</span>
       <span class="memo-date">${formatWhenLabel(item)}</span>
       <button class="memo-remove" type="button" data-memo-delete="${item.id}">×</button>
     </li>
   `).join("");
-  if (!memoChecks.length) memoCheckList.innerHTML = `<li class="empty">회의 때 나온 일정 체크 항목을 추가하세요.</li>`;
+  if (!openItems.length) memoCheckList.innerHTML = `<li class="empty">회의 때 나온 일정 체크 항목을 추가하세요.</li>`;
 }
 
 
