@@ -282,7 +282,7 @@ function renderMemoChecks() {
     <li class="memo-check-item ${item.done ? "is-done" : ""}">
       <button class="memo-toggle" type="button" data-memo-toggle="${item.id}">${item.done ? "✓" : ""}</button>
       <span class="memo-text">${item.text}</span>
-      <span class="memo-date">${item.when || item.date || "시점 미정"}</span>
+      <span class="memo-date">${formatWhenLabel(item)}</span>
       <button class="memo-remove" type="button" data-memo-delete="${item.id}">×</button>
     </li>
   `).join("");
@@ -342,6 +342,46 @@ function formatMonthLabel(monthKey) {
 function monthFromWhen(when) {
   if (when === "다음 달") return formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1));
   return formatMonthKey(baseToday);
+}
+
+// "이번 주"/"다음 주" etc. describe a point in time relative to when the item was
+// created. Storing only that label made it go stale as real time passed it by, so
+// we anchor it to a concrete day/week/month at creation time and recompute the
+// relative label on every render instead.
+function computeWhenAnchor(when) {
+  if (when === "오늘") return { unit: "day", key: formatDateKey(baseToday) };
+  if (when === "이번 주") return { unit: "week", key: formatDateKey(startOfWeek(baseToday)) };
+  if (when === "다음 주") return { unit: "week", key: formatDateKey(addDays(startOfWeek(baseToday), 7)) };
+  if (when === "이번 달") return { unit: "month", key: formatMonthKey(baseToday) };
+  if (when === "다음 달") return { unit: "month", key: formatMonthKey(new Date(baseToday.getFullYear(), baseToday.getMonth() + 1, 1)) };
+  return null;
+}
+
+function formatWhenLabel(item) {
+  if (!item.whenUnit || !item.whenKey) return item.when || item.date || "시점 미정";
+  if (item.whenUnit === "day") {
+    const diffDays = Math.round((new Date(`${item.whenKey}T00:00:00`) - baseToday) / 86400000);
+    if (diffDays === 0) return "오늘";
+    if (diffDays < 0) return `지난 일정 (${formatShortDate(new Date(`${item.whenKey}T00:00:00`))})`;
+    return formatShortDate(new Date(`${item.whenKey}T00:00:00`));
+  }
+  if (item.whenUnit === "week") {
+    const diffWeeks = Math.round((new Date(`${item.whenKey}T00:00:00`) - startOfWeek(baseToday)) / (7 * 86400000));
+    if (diffWeeks === 0) return "이번 주";
+    if (diffWeeks === 1) return "다음 주";
+    if (diffWeeks < 0) return "지난 주";
+    return `${diffWeeks}주 후`;
+  }
+  if (item.whenUnit === "month") {
+    const [keyYear, keyMonth] = item.whenKey.split("-").map(Number);
+    const [nowYear, nowMonth] = formatMonthKey(baseToday).split("-").map(Number);
+    const diffMonths = (keyYear - nowYear) * 12 + (keyMonth - nowMonth);
+    if (diffMonths === 0) return "이번 달";
+    if (diffMonths === 1) return "다음 달";
+    if (diffMonths < 0) return "지난 달";
+    return `${keyMonth}월`;
+  }
+  return item.when || "시점 미정";
 }
 
 function escapeHtml(value) {
@@ -596,7 +636,8 @@ memoCheckForm.addEventListener("submit", (event) => {
   const text = document.querySelector("#memoCheckText").value.trim();
   const when = document.querySelector("#memoCheckWhen").value;
   if (!text) return;
-  memoChecks.unshift({ id: crypto.randomUUID(), text, when, done: false });
+  const anchor = computeWhenAnchor(when);
+  memoChecks.unshift({ id: crypto.randomUUID(), text, when, ...(anchor ? { whenUnit: anchor.unit, whenKey: anchor.key } : {}), done: false });
   saveMemoChecks();
   memoCheckForm.reset();
   render();
