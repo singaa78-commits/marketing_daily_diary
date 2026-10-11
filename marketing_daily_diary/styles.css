@@ -1470,3 +1470,138 @@ body {
 .calendar-grid.week-view .event:last-child {
   margin-bottom: 0;
 }
+
+/* worklog + meeting-note */
+.day-card {
+  position: relative;
+}
+.worklog-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.worklog-area,
+.meeting-note-area {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+}
+.worklog-form,
+.meeting-note-form {
+  display: grid;
+  gap: 10px;
+}
+.worklog-form input[type="date"],
+.meeting-note-toolbar input[type="date"] {
+  width: fit-content;
+  min-height: 36px;
+  border: 1px solid #d9d9d9;
+  background: white;
+  padding: 0 10px;
+  font: inherit;
+}
+.worklog-form textarea,
+.meeting-note-form textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid #d9d9d9;
+  background: #fffdf0;
+  padding: 12px;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+.meeting-note-form textarea {
+  min-height: 160px;
+}
+.meeting-note-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.worklog-actions,
+.meeting-note-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.worklog-actions button,
+.meeting-note-actions button,
+.meeting-note-toolbar .ghost-button {
+  min-height: 36px;
+  border: 1px solid #202124;
+  background: var(--brand-primary);
+  color: #fff;
+  padding: 0 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.meeting-note-toolbar .ghost-button {
+  background: #fff;
+  color: #202124;
+}
+.worklog-list,
+.meeting-note-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.worklog-item,
+.meeting-note-item {
+  padding: 12px;
+  border: 1px solid #e1e1e1;
+  background: #fff;
+}
+.worklog-item-head,
+.meeting-note-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.worklog-item-actions,
+.meeting-note-item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.worklog-edit,
+.worklog-delete,
+.meeting-note-edit,
+.meeting-note-delete {
+  min-height: 28px;
+  border: 1px solid #202124;
+  background: #fff;
+  color: #202124;
+  padding: 0 10px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.worklog-content,
+.meeting-note-content {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+.worklog-content a,
+.meeting-note-content a {
+  color: #2563eb;
+  font-weight: 900;
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .worklog-item-head,
+  .meeting-note-item-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

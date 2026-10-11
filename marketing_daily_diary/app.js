@@ -60,6 +60,8 @@ let tasks = loadTasks();
 let meetingChecklists = loadMeetingChecklists();
 let memoChecks = loadMemoChecks();
 let quickNotes = loadQuickNotes();
+let workLogs = loadWorkLogs();
+let meetingNotes = loadMeetingNotes();
 
 let activeFilter = "all";
 let selectedTaskDate = formatDateKey(baseToday);
@@ -95,6 +97,17 @@ const scratchNoteSubmitButton = document.querySelector("#scratchNoteSubmitButton
 const clearScratchNoteButton = document.querySelector("#clearScratchNoteButton");
 const cancelScratchNoteEditButton = document.querySelector("#cancelScratchNoteEditButton");
 const scratchNoteList = document.querySelector("#scratchNoteList");
+const workLogForm = document.querySelector("#workLogForm");
+const workLogDate = document.querySelector("#workLogDate");
+const workLogText = document.querySelector("#workLogText");
+const workLogSubmitButton = document.querySelector("#workLogSubmitButton");
+const workLogList = document.querySelector("#workLogList");
+const meetingNoteForm = document.querySelector("#meetingNoteForm");
+const meetingNoteWeek = document.querySelector("#meetingNoteWeek");
+const meetingNoteText = document.querySelector("#meetingNoteText");
+const meetingNoteSubmitButton = document.querySelector("#meetingNoteSubmitButton");
+const meetingNoteList = document.querySelector("#meetingNoteList");
+const importWorkLogsButton = document.querySelector("#importWorkLogsButton");
 
 
 
@@ -107,6 +120,8 @@ function serializePlannerState(updatedAt = new Date().toISOString()) {
     meetingChecklists,
     memoChecks,
     quickNotes,
+    workLogs,
+    meetingNotes,
     updatedAt
   };
 }
@@ -125,7 +140,7 @@ function normalizeCalendarEvents(items) {
   return Array.isArray(items) ? items.map(normalizeCalendarEvent).filter(Boolean) : [];
 }
 function hasLocalPlannerState() {
-  return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length;
+  return tasks.length || calendarEvents.length || Object.keys(meetingChecklists).length || memoChecks.length || quickNotes.length || workLogs.length || meetingNotes.length;
 }
 function readStoredJson(key, fallback) {
   const saved = localStorage.getItem(key);
@@ -162,11 +177,15 @@ function applyPlannerState(state) {
   const incomingMemoChecks = Array.isArray(state.memoChecks) ? state.memoChecks : [];
   memoChecks = backfillWhenAnchors(incomingMemoChecks);
   quickNotes = Array.isArray(state.quickNotes) ? state.quickNotes : [];
+  workLogs = Array.isArray(state.workLogs) ? state.workLogs : [];
+  meetingNotes = Array.isArray(state.meetingNotes) ? state.meetingNotes : [];
   writeStoredJson("leaderDashboardTasks", tasks);
   writeStoredJson("leaderDashboardCalendarEvents", calendarEvents);
   writeStoredJson("leaderDashboardMeetingChecklists", meetingChecklists);
   writeStoredJson("leaderDashboardMemoChecks", memoChecks);
   writeStoredJson("leaderDashboardQuickNotes", quickNotes);
+  writeStoredJson("leaderDashboardWorkLogs", workLogs);
+  writeStoredJson("leaderDashboardMeetingNotes", meetingNotes);
   render();
   isApplyingRemoteState = false;
   if (memoChecks !== incomingMemoChecks) saveMemoChecks();
@@ -230,6 +249,26 @@ function saveQuickNotes() {
   writeStoredJson("leaderDashboardQuickNotes", quickNotes);
   savePlannerFields({ quickNotes });
 }
+
+function loadWorkLogs() {
+  const items = readStoredJson("leaderDashboardWorkLogs", []);
+  return Array.isArray(items) ? items : [];
+}
+
+function saveWorkLogs() {
+  writeStoredJson("leaderDashboardWorkLogs", workLogs);
+  savePlannerFields({ workLogs });
+}
+
+function loadMeetingNotes() {
+  const items = readStoredJson("leaderDashboardMeetingNotes", []);
+  return Array.isArray(items) ? items : [];
+}
+
+function saveMeetingNotes() {
+  writeStoredJson("leaderDashboardMeetingNotes", meetingNotes);
+  savePlannerFields({ meetingNotes });
+}
 function loadMeetingChecklists() {
   const items = readStoredJson("leaderDashboardMeetingChecklists", {});
   return items && typeof items === "object" && !Array.isArray(items) ? items : {};
@@ -241,6 +280,14 @@ function saveMeetingChecklists() {
 }
 
 eventDate.value = formatDateKey(baseToday);
+if (workLogDate) {
+  workLogDate.value = formatDateKey(baseToday);
+  loadWorkLogForDate(workLogDate.value);
+}
+if (meetingNoteWeek) {
+  meetingNoteWeek.value = formatDateKey(addDays(startOfWeek(baseToday), 1));
+  loadMeetingNoteForWeek(meetingNoteWeek.value);
+}
 
 function createWorkflow() {
   return Object.fromEntries(influencerSteps.map((step) => [step.id, false]));
@@ -276,6 +323,8 @@ function render() {
   renderUpcomingWork();
   renderMonthlyProgress();
   renderQuickNotes();
+  renderWorkLogs();
+  renderMeetingNotes();
 }
 
 
@@ -429,6 +478,78 @@ function renderQuickNotes() {
   `).join("");
   if (!quickNotes.length) scratchNoteList.innerHTML = `<li class="empty">아직 저장된 메모가 없습니다.</li>`;
 }
+
+function hasWorkLog(dateKey) {
+  return workLogs.some((log) => log.date === dateKey);
+}
+
+function renderWorkLogs() {
+  if (!workLogList) return;
+  const sorted = [...workLogs].sort((first, second) => second.date.localeCompare(first.date));
+  workLogList.innerHTML = sorted.map((log) => {
+    const logDate = new Date(`${log.date}T00:00:00`);
+    return `
+    <li class="worklog-item">
+      <div class="worklog-item-head">
+        <strong>${formatShortDate(logDate)} (${formatWeekday(logDate)})</strong>
+        <div class="worklog-item-actions">
+          <button class="worklog-edit" type="button" data-worklog-edit="${log.date}">수정</button>
+          <button class="worklog-delete" type="button" data-worklog-delete="${log.date}">삭제</button>
+        </div>
+      </div>
+      <div class="worklog-content">${linkifyText(log.text)}</div>
+    </li>`;
+  }).join("");
+  if (!sorted.length) workLogList.innerHTML = `<li class="empty">아직 작성된 업무일지가 없습니다. 캘린더에서 날짜를 클릭하거나 아래에서 바로 작성하세요.</li>`;
+}
+
+function loadWorkLogForDate(dateKey) {
+  if (!workLogText) return;
+  const entry = workLogs.find((log) => log.date === dateKey);
+  workLogText.value = entry ? entry.text : "";
+  if (workLogSubmitButton) workLogSubmitButton.textContent = entry ? "일지 수정" : "일지 저장";
+}
+
+function openWorkLogForDate(dateKey) {
+  if (!workLogDate) return;
+  workLogDate.value = dateKey;
+  loadWorkLogForDate(dateKey);
+  workLogForm.scrollIntoView({ behavior: "smooth", block: "center" });
+  workLogText.focus();
+}
+
+function weekDatesFromMonday(mondayKey) {
+  const monday = new Date(`${mondayKey}T00:00:00`);
+  return Array.from({ length: 7 }, (_, index) => formatDateKey(addDays(monday, index)));
+}
+
+function renderMeetingNotes() {
+  if (!meetingNoteList) return;
+  const sorted = [...meetingNotes].sort((first, second) => second.weekStart.localeCompare(first.weekStart));
+  meetingNoteList.innerHTML = sorted.map((note) => {
+    const monday = new Date(`${note.weekStart}T00:00:00`);
+    return `
+    <li class="meeting-note-item">
+      <div class="meeting-note-item-head">
+        <strong>${formatShortDate(monday)} 주 미팅노트</strong>
+        <div class="meeting-note-item-actions">
+          <button class="meeting-note-edit" type="button" data-meeting-edit="${note.weekStart}">수정</button>
+          <button class="meeting-note-delete" type="button" data-meeting-delete="${note.weekStart}">삭제</button>
+        </div>
+      </div>
+      <div class="meeting-note-content">${linkifyText(note.text)}</div>
+    </li>`;
+  }).join("");
+  if (!sorted.length) meetingNoteList.innerHTML = `<li class="empty">아직 작성된 미팅노트가 없습니다.</li>`;
+}
+
+function loadMeetingNoteForWeek(mondayKey) {
+  if (!meetingNoteText) return;
+  const entry = meetingNotes.find((note) => note.weekStart === mondayKey);
+  meetingNoteText.value = entry ? entry.text : "";
+  if (meetingNoteSubmitButton) meetingNoteSubmitButton.textContent = entry ? "미팅노트 수정" : "미팅노트 저장";
+}
+
 function setTaskFilter(filterName) {
   activeFilter = filterName;
   filters.forEach((filter) => filter.classList.toggle("is-active", filter.dataset.filter === filterName));
@@ -521,9 +642,10 @@ function renderWeekCalendar() {
   weekdays.innerHTML = "";
   grid.className = "calendar-grid week-view";
   grid.innerHTML = days.map((dateItem) => {
-    const dateEvents = eventsForDate(formatDateKey(dateItem));
+    const dateKey = formatDateKey(dateItem);
+    const dateEvents = eventsForDate(dateKey);
     const minHeight = Math.max(300, 88 + dateEvents.length * 128);
-    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" style="min-height: ${minHeight}px;"><div class="day-name"><span>${formatWeekday(dateItem)}</span><span>${formatShortDate(dateItem)}</span></div>${renderEvents(dateEvents)}</article>`;
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" data-date="${dateKey}" style="min-height: ${minHeight}px;">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${formatWeekday(dateItem)}</span><span>${formatShortDate(dateItem)}</span></div>${renderEvents(dateEvents)}</article>`;
   }).join("");
 }
 
@@ -541,7 +663,8 @@ function renderMonthCalendar() {
   grid.className = "calendar-grid month-view";
   grid.innerHTML = days.map((dateItem) => {
     const muted = dateItem.getMonth() !== month;
-    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}"><div class="day-name"><span>${dateItem.getDate()}</span><span>${formatWeekday(dateItem)}</span></div>${renderEvents(eventsForDate(formatDateKey(dateItem)), 2)}</article>`;
+    const dateKey = formatDateKey(dateItem);
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}" data-date="${dateKey}">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${dateItem.getDate()}</span><span>${formatWeekday(dateItem)}</span></div>${renderEvents(eventsForDate(dateKey), 2)}</article>`;
   }).join("");
 }
 
@@ -650,6 +773,94 @@ scratchNoteList?.addEventListener("click", (event) => {
   saveQuickNotes();
   renderQuickNotes();
 });
+
+workLogDate?.addEventListener("change", () => {
+  if (!workLogDate.value) return;
+  loadWorkLogForDate(workLogDate.value);
+});
+
+workLogForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const date = workLogDate.value;
+  const text = workLogText.value.trim();
+  if (!date || !text) return;
+  const updatedAt = new Date().toISOString();
+  const exists = workLogs.some((log) => log.date === date);
+  workLogs = exists
+    ? workLogs.map((log) => (log.date === date ? { ...log, text, updatedAt } : log))
+    : [...workLogs, { date, text, updatedAt }];
+  saveWorkLogs();
+  renderWorkLogs();
+  renderCalendar();
+  loadWorkLogForDate(date);
+});
+
+workLogList?.addEventListener("click", (event) => {
+  const editDate = event.target.closest("[data-worklog-edit]")?.dataset.worklogEdit;
+  const deleteDate = event.target.closest("[data-worklog-delete]")?.dataset.worklogDelete;
+  if (editDate) {
+    openWorkLogForDate(editDate);
+    return;
+  }
+  if (!deleteDate) return;
+  workLogs = workLogs.filter((log) => log.date !== deleteDate);
+  saveWorkLogs();
+  renderWorkLogs();
+  renderCalendar();
+  if (workLogDate.value === deleteDate) loadWorkLogForDate(deleteDate);
+});
+
+meetingNoteWeek?.addEventListener("change", () => {
+  if (!meetingNoteWeek.value) return;
+  loadMeetingNoteForWeek(meetingNoteWeek.value);
+});
+
+meetingNoteForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const weekStart = meetingNoteWeek.value;
+  const text = meetingNoteText.value.trim();
+  if (!weekStart || !text) return;
+  const updatedAt = new Date().toISOString();
+  const exists = meetingNotes.some((note) => note.weekStart === weekStart);
+  meetingNotes = exists
+    ? meetingNotes.map((note) => (note.weekStart === weekStart ? { ...note, text, updatedAt } : note))
+    : [...meetingNotes, { weekStart, text, updatedAt }];
+  saveMeetingNotes();
+  renderMeetingNotes();
+  loadMeetingNoteForWeek(weekStart);
+});
+
+meetingNoteList?.addEventListener("click", (event) => {
+  const editWeek = event.target.closest("[data-meeting-edit]")?.dataset.meetingEdit;
+  const deleteWeek = event.target.closest("[data-meeting-delete]")?.dataset.meetingDelete;
+  if (editWeek) {
+    meetingNoteWeek.value = editWeek;
+    loadMeetingNoteForWeek(editWeek);
+    meetingNoteText.focus();
+    meetingNoteForm.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if (!deleteWeek) return;
+  meetingNotes = meetingNotes.filter((note) => note.weekStart !== deleteWeek);
+  saveMeetingNotes();
+  renderMeetingNotes();
+  if (meetingNoteWeek.value === deleteWeek) loadMeetingNoteForWeek(deleteWeek);
+});
+
+importWorkLogsButton?.addEventListener("click", () => {
+  if (!meetingNoteWeek.value) return;
+  const weekDates = new Set(weekDatesFromMonday(meetingNoteWeek.value));
+  const entries = workLogs.filter((log) => weekDates.has(log.date)).sort((first, second) => first.date.localeCompare(second.date));
+  if (!entries.length) {
+    meetingNoteText.value = "해당 주에 작성된 업무일지가 없습니다.";
+    return;
+  }
+  meetingNoteText.value = entries.map((log) => {
+    const logDate = new Date(`${log.date}T00:00:00`);
+    return `[${formatShortDate(logDate)} ${formatWeekday(logDate)}]\n${log.text}`;
+  }).join("\n\n");
+});
+
 memoCheckForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = document.querySelector("#memoCheckText").value.trim();
@@ -753,6 +964,10 @@ document.querySelector("#calendarGrid").addEventListener("click", (event) => {
     startEditingEvent(eventEdit.dataset.eventEdit);
     return;
   }
+  const dayCard = event.target.closest(".day-card");
+  if (dayCard?.dataset.date && !event.target.closest("[data-event-edit], [data-event-delete], button")) {
+    openWorkLogForDate(dayCard.dataset.date);
+  }
 });
 
 taskList.addEventListener("click", (event) => {
@@ -791,7 +1006,7 @@ document.querySelector("#calendarGrid").addEventListener("keydown", (event) => {
   startEditingEvent(eventEdit.dataset.eventEdit);
 });
 
-resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; quickNotes = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); saveQuickNotes(); render(); });
+resetButton.addEventListener("click", () => { tasks = []; calendarEvents = []; meetingChecklists = {}; memoChecks = []; quickNotes = []; workLogs = []; meetingNotes = []; resetEventForm(); saveTasks(); saveCalendarEvents(); saveMeetingChecklists(); saveMemoChecks(); saveQuickNotes(); saveWorkLogs(); saveMeetingNotes(); render(); });
 
 render();
 startFirebaseSync();

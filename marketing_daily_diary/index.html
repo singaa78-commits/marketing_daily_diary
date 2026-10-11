@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260818-9" />
+    <link rel="stylesheet" href="styles.css?v=20260818-10" />
   </head>
   <body>
     <main class="dashboard">
@@ -127,6 +127,41 @@
         </form>        <div id="monthWeekdays" class="month-weekdays" aria-hidden="true"></div>
         <div id="calendarGrid" class="calendar-grid"></div>
       </section>
+      <section class="worklog-area" aria-label="업무일지">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Journal</p>
+            <h2>업무일지</h2>
+          </div>
+        </div>
+        <form id="workLogForm" class="worklog-form" aria-label="업무일지 작성">
+          <input id="workLogDate" type="date" required />
+          <textarea id="workLogText" rows="4" placeholder="오늘의 이슈를 기록하세요. 예) 업쿠폰 메타광고 시작&#10;- 메타 비용 소진 안되어서&#10;- 장바구니 전환 테스트" required></textarea>
+          <div class="worklog-actions">
+            <button id="workLogSubmitButton" type="submit">일지 저장</button>
+          </div>
+        </form>
+        <ul id="workLogList" class="worklog-list" aria-live="polite"></ul>
+      </section>
+      <section class="meeting-note-area" aria-label="월요일 미팅노트">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Meeting</p>
+            <h2>월요일 미팅노트</h2>
+          </div>
+        </div>
+        <form id="meetingNoteForm" class="meeting-note-form" aria-label="미팅노트 작성">
+          <div class="meeting-note-toolbar">
+            <input id="meetingNoteWeek" type="date" required />
+            <button id="importWorkLogsButton" class="ghost-button" type="button">이번 주 업무일지 불러오기</button>
+          </div>
+          <textarea id="meetingNoteText" rows="6" placeholder="월요일 미팅에서 전달할 내용을 정리하세요." required></textarea>
+          <div class="meeting-note-actions">
+            <button id="meetingNoteSubmitButton" type="submit">미팅노트 저장</button>
+          </div>
+        </form>
+        <ul id="meetingNoteList" class="meeting-note-list" aria-live="polite"></ul>
+      </section>
       <section class="scratch-note-area" aria-label="자유 메모장">
         <div class="section-head">
           <div>
@@ -145,6 +180,6 @@
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260818-16"></script>
+    <script type="module" src="app.js?v=20260818-17"></script>
   </body>
 </html>
