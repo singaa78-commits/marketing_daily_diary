@@ -133,6 +133,7 @@
             <p class="eyebrow">Journal</p>
             <h2>업무일지</h2>
           </div>
+          <button id="toggleWorkLogListButton" class="ghost-button" type="button">지난 일지 보기</button>
         </div>
         <form id="workLogForm" class="worklog-form" aria-label="업무일지 작성">
           <input id="workLogDate" type="date" required />
@@ -141,7 +142,7 @@
             <button id="workLogSubmitButton" type="submit">일지 저장</button>
           </div>
         </form>
-        <ul id="workLogList" class="worklog-list" aria-live="polite"></ul>
+        <ul id="workLogList" class="worklog-list" aria-live="polite" hidden></ul>
       </section>
       <section class="meeting-note-area" aria-label="월요일 미팅노트">
         <div class="section-head">
@@ -149,6 +150,7 @@
             <p class="eyebrow">Meeting</p>
             <h2>월요일 미팅노트</h2>
           </div>
+          <button id="toggleMeetingNoteListButton" class="ghost-button" type="button">지난 노트 보기</button>
         </div>
         <form id="meetingNoteForm" class="meeting-note-form" aria-label="미팅노트 작성">
           <div class="meeting-note-toolbar">
@@ -160,7 +162,7 @@
             <button id="meetingNoteSubmitButton" type="submit">미팅노트 저장</button>
           </div>
         </form>
-        <ul id="meetingNoteList" class="meeting-note-list" aria-live="polite"></ul>
+        <ul id="meetingNoteList" class="meeting-note-list" aria-live="polite" hidden></ul>
       </section>
       <section class="scratch-note-area" aria-label="자유 메모장">
         <div class="section-head">
@@ -180,6 +182,6 @@
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260818-17"></script>
+    <script type="module" src="app.js?v=20260818-18"></script>
   </body>
 </html>

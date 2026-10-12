@@ -108,6 +108,8 @@ const meetingNoteText = document.querySelector("#meetingNoteText");
 const meetingNoteSubmitButton = document.querySelector("#meetingNoteSubmitButton");
 const meetingNoteList = document.querySelector("#meetingNoteList");
 const importWorkLogsButton = document.querySelector("#importWorkLogsButton");
+const toggleWorkLogListButton = document.querySelector("#toggleWorkLogListButton");
+const toggleMeetingNoteListButton = document.querySelector("#toggleMeetingNoteListButton");
 
 
 
@@ -845,6 +847,16 @@ meetingNoteList?.addEventListener("click", (event) => {
   saveMeetingNotes();
   renderMeetingNotes();
   if (meetingNoteWeek.value === deleteWeek) loadMeetingNoteForWeek(deleteWeek);
+});
+
+toggleWorkLogListButton?.addEventListener("click", () => {
+  workLogList.hidden = !workLogList.hidden;
+  toggleWorkLogListButton.textContent = workLogList.hidden ? "지난 일지 보기" : "지난 일지 숨기기";
+});
+
+toggleMeetingNoteListButton?.addEventListener("click", () => {
+  meetingNoteList.hidden = !meetingNoteList.hidden;
+  toggleMeetingNoteListButton.textContent = meetingNoteList.hidden ? "지난 노트 보기" : "지난 노트 숨기기";
 });
 
 importWorkLogsButton?.addEventListener("click", () => {
