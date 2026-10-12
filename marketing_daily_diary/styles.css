@@ -1545,6 +1545,10 @@ body {
   background: #fff;
   color: #202124;
 }
+.worklog-list[hidden],
+.meeting-note-list[hidden] {
+  display: none;
+}
 .worklog-list,
 .meeting-note-list {
   display: grid;
