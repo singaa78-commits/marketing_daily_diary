@@ -1338,6 +1338,11 @@ body {
 }
 
 /* event-calendar-link */
+.identity-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .event-calendar-link {
   display: inline-flex;
   align-items: center;
