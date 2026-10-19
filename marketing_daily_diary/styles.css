@@ -1614,3 +1614,76 @@ body {
     align-items: flex-start;
   }
 }
+
+/* scratch-note-folders */
+.scratch-note-form input[type="text"] {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #d9d9d9;
+  padding: 0 12px;
+  font: inherit;
+}
+.scratch-note-list {
+  display: block;
+  border-top: 1px solid #202124;
+}
+.note-folder {
+  border-bottom: 1px solid #202124;
+}
+.note-folder-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  background: #fff;
+  color: #202124;
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+.note-folder-head:hover,
+.note-folder-head:focus-visible {
+  background: var(--brand-primary-light, #f3f4f6);
+  outline: none;
+}
+.note-folder-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-folder-count {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.note-folder-chevron {
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.note-folder.is-open .note-folder-chevron {
+  transform: rotate(90deg);
+}
+.note-folder-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 4px 12px 14px;
+  list-style: none;
+}
+.note-folder-items[hidden] {
+  display: none;
+}
+.scratch-note-list > .empty {
+  padding: 14px 12px;
+}
+@media (max-width: 760px) {
+  .note-folder-items {
+    grid-template-columns: 1fr;
+  }
+}

@@ -70,6 +70,8 @@ let editingEventId = null;
 let visibleMonth = new Date(baseToday.getFullYear(), baseToday.getMonth(), 1);
 let activeProgressMonth = null;
 let editingQuickNoteId = null;
+const UNCATEGORIZED = "미분류";
+const openNoteCategories = new Set();
 let lastLocalMutationAt = 0;
 
 const taskList = document.querySelector("#taskList");
@@ -93,6 +95,8 @@ const monthlyProgressCurrent = document.querySelector("#monthlyProgressCurrent")
 const monthlyProgressList = document.querySelector("#monthlyProgressList");
 const scratchNoteForm = document.querySelector("#scratchNoteForm");
 const scratchNoteText = document.querySelector("#scratchNoteText");
+const scratchNoteCategory = document.querySelector("#scratchNoteCategory");
+const scratchNoteCategoryOptions = document.querySelector("#scratchNoteCategoryOptions");
 const scratchNoteSubmitButton = document.querySelector("#scratchNoteSubmitButton");
 const clearScratchNoteButton = document.querySelector("#clearScratchNoteButton");
 const cancelScratchNoteEditButton = document.querySelector("#cancelScratchNoteEditButton");
@@ -468,16 +472,45 @@ function linkifyText(value) {
   return safe.replace(/(https?:\/\/[^\s<]+)/g, `<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>`).replace(/\n/g, "<br />");
 }
 
+function noteCategory(note) {
+  return note.category?.trim() || UNCATEGORIZED;
+}
+
 function renderQuickNotes() {
   if (!scratchNoteList) return;
-  scratchNoteList.innerHTML = quickNotes.map((note) => `
-    <li class="scratch-note-item">
-      <div class="scratch-note-content">${linkifyText(note.text)}</div>
-      <small>${note.createdAt}</small>
-      <button class="scratch-note-edit" type="button" data-note-edit="${note.id}">수정</button>
-      <button class="scratch-note-delete" type="button" data-note-delete="${note.id}">삭제</button>
-    </li>
-  `).join("");
+  const groups = new Map();
+  quickNotes.forEach((note) => {
+    const category = noteCategory(note);
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category).push(note);
+  });
+  const categories = [...groups.keys()].sort((a, b) => (a === UNCATEGORIZED) - (b === UNCATEGORIZED) || a.localeCompare(b, "ko"));
+  if (scratchNoteCategoryOptions) {
+    scratchNoteCategoryOptions.innerHTML = categories.filter((category) => category !== UNCATEGORIZED).map((category) => `<option value="${escapeHtml(category)}"></option>`).join("");
+  }
+  scratchNoteList.innerHTML = categories.map((category) => {
+    const isOpen = openNoteCategories.has(category);
+    const notes = groups.get(category);
+    return `
+      <li class="note-folder${isOpen ? " is-open" : ""}">
+        <button class="note-folder-head" type="button" data-note-folder="${escapeHtml(category)}" aria-expanded="${isOpen}">
+          <span class="note-folder-name">${escapeHtml(category)}</span>
+          <span class="note-folder-count">${notes.length}</span>
+          <span class="note-folder-chevron" aria-hidden="true">›</span>
+        </button>
+        <ul class="note-folder-items" ${isOpen ? "" : "hidden"}>
+          ${notes.map((note) => `
+            <li class="scratch-note-item">
+              <div class="scratch-note-content">${linkifyText(note.text)}</div>
+              <small>${note.createdAt}</small>
+              <button class="scratch-note-edit" type="button" data-note-edit="${note.id}">수정</button>
+              <button class="scratch-note-delete" type="button" data-note-delete="${note.id}">삭제</button>
+            </li>
+          `).join("")}
+        </ul>
+      </li>
+    `;
+  }).join("");
   if (!quickNotes.length) scratchNoteList.innerHTML = `<li class="empty">아직 저장된 메모가 없습니다.</li>`;
 }
 
@@ -730,6 +763,7 @@ function startEditingQuickNote(noteId) {
   if (!note) return;
   editingQuickNoteId = noteId;
   scratchNoteText.value = note.text;
+  if (scratchNoteCategory) scratchNoteCategory.value = note.category || "";
   scratchNoteSubmitButton.textContent = "수정 저장";
   cancelScratchNoteEditButton.classList.remove("is-hidden");
   scratchNoteText.focus();
@@ -745,11 +779,13 @@ scratchNoteForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = scratchNoteText.value.trim();
   if (!text) return;
+  const category = scratchNoteCategory?.value.trim() || "";
   if (editingQuickNoteId) {
-    quickNotes = quickNotes.map((note) => note.id === editingQuickNoteId ? { ...note, text, updatedAt: formatDateKey(baseToday) } : note);
+    quickNotes = quickNotes.map((note) => note.id === editingQuickNoteId ? { ...note, text, category, updatedAt: formatDateKey(baseToday) } : note);
   } else {
-    quickNotes.unshift({ id: crypto.randomUUID(), text, createdAt: formatDateKey(baseToday) });
+    quickNotes.unshift({ id: crypto.randomUUID(), text, category, createdAt: formatDateKey(baseToday) });
   }
+  openNoteCategories.add(category || UNCATEGORIZED);
   saveQuickNotes();
   resetQuickNoteForm();
   renderQuickNotes();
@@ -763,6 +799,13 @@ clearScratchNoteButton?.addEventListener("click", () => {
 cancelScratchNoteEditButton?.addEventListener("click", () => resetQuickNoteForm());
 
 scratchNoteList?.addEventListener("click", (event) => {
+  const folder = event.target.closest("[data-note-folder]")?.dataset.noteFolder;
+  if (folder !== undefined) {
+    if (openNoteCategories.has(folder)) openNoteCategories.delete(folder);
+    else openNoteCategories.add(folder);
+    renderQuickNotes();
+    return;
+  }
   const editId = event.target.closest("[data-note-edit]")?.dataset.noteEdit;
   const deleteId = event.target.closest("[data-note-delete]")?.dataset.noteDelete;
   if (editId) {

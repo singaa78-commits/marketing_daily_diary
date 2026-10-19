@@ -175,6 +175,8 @@
           </div>
         </div>
         <form id="scratchNoteForm" class="scratch-note-form" aria-label="메모 추가">
+          <input id="scratchNoteCategory" type="text" list="scratchNoteCategoryOptions" placeholder="카테고리 (비워두면 미분류)" aria-label="메모 카테고리" />
+          <datalist id="scratchNoteCategoryOptions"></datalist>
           <textarea id="scratchNoteText" rows="5" placeholder="간단한 메모, 참고 링크, 아이디어를 자유롭게 적어두세요." required></textarea>
           <div class="scratch-note-actions">
             <button id="scratchNoteSubmitButton" type="submit">메모 저장</button>
@@ -185,6 +187,6 @@
         <ul id="scratchNoteList" class="scratch-note-list" aria-live="polite"></ul>
       </section>
     </main>
-    <script type="module" src="app.js?v=20260818-18"></script>
+    <script type="module" src="app.js?v=20261020-1"></script>
   </body>
 </html>
