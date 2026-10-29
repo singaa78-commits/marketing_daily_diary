@@ -673,14 +673,14 @@ function renderWeekCalendar() {
   const grid = document.querySelector("#calendarGrid");
   const weekdays = document.querySelector("#monthWeekdays");
   document.querySelector("#calendarTitle").textContent = "이번 주 캘린더";
-  weekdays.classList.remove("is-visible");
-  weekdays.innerHTML = "";
+  weekdays.className = "month-weekdays is-visible is-week";
+  weekdays.innerHTML = days.map((dateItem) => `<span>${formatWeekday(dateItem)}</span>`).join("");
   grid.className = "calendar-grid week-view";
   grid.innerHTML = days.map((dateItem) => {
     const dateKey = formatDateKey(dateItem);
     const dateEvents = eventsForDate(dateKey);
     const minHeight = Math.max(300, 88 + dateEvents.length * 128);
-    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" data-date="${dateKey}" style="min-height: ${minHeight}px;">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${formatWeekday(dateItem)}</span><span>${formatShortDate(dateItem)}</span></div>${renderEvents(dateEvents)}</article>`;
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" data-date="${dateKey}" style="min-height: ${minHeight}px;">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${formatShortDate(dateItem)}</span><span class="day-weekday">${formatWeekday(dateItem)}</span></div>${renderEvents(dateEvents, Infinity)}</article>`;
   }).join("");
 }
 
@@ -693,13 +693,13 @@ function renderMonthCalendar() {
   const grid = document.querySelector("#calendarGrid");
   const weekdays = document.querySelector("#monthWeekdays");
   document.querySelector("#calendarTitle").textContent = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long" }).format(visibleMonth);
-  weekdays.classList.add("is-visible");
+  weekdays.className = "month-weekdays is-visible";
   weekdays.innerHTML = ["일", "월", "화", "수", "목", "금", "토"].map((day) => `<span>${day}</span>`).join("");
   grid.className = "calendar-grid month-view";
   grid.innerHTML = days.map((dateItem) => {
     const muted = dateItem.getMonth() !== month;
     const dateKey = formatDateKey(dateItem);
-    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}" data-date="${dateKey}">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${dateItem.getDate()}</span><span>${formatWeekday(dateItem)}</span></div>${renderEvents(eventsForDate(dateKey), 2)}</article>`;
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}" data-date="${dateKey}">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${dateItem.getDate()}</span></div>${renderEvents(eventsForDate(dateKey), 2)}</article>`;
   }).join("");
 }
 
