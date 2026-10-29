@@ -1736,3 +1736,37 @@ body {
     display: inline;
   }
 }
+
+/* calendar-flat-events */
+.calendar-grid .event {
+  border: 0;
+  border-left: 3px solid #b9e7a8;
+  background: #f7f7f5;
+}
+.calendar-grid .event.kind-check { border-left-color: #b7d7ff; }
+.calendar-grid .event.kind-schedule { border-left-color: #b9e7a8; }
+.calendar-grid .event.kind-deadline { border-left-color: #f5a3bb; }
+.calendar-grid .event.kind-meeting { border-left-color: #ffe66d; }
+.calendar-grid .event.kind-review { border-left-color: #9edfd0; }
+.calendar-grid .event:hover {
+  background: #fffdf0;
+}
+.calendar-grid .event-remove {
+  border: 0;
+  background: transparent;
+  color: #9a9a9a;
+  opacity: 0;
+}
+.calendar-grid .event:hover .event-remove,
+.calendar-grid .event:focus-within .event-remove,
+.calendar-grid .event-remove:focus-visible {
+  opacity: 1;
+}
+.calendar-grid .event-remove:hover {
+  color: #202124;
+}
+@media (hover: none) {
+  .calendar-grid .event-remove {
+    opacity: 1;
+  }
+}
