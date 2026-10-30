@@ -2081,3 +2081,22 @@ body {
 .task-area .memo-check-item.is-done .memo-toggle {
   background: transparent;
 }
+
+/* task-area-two-column-layout */
+.task-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+.task-main {
+  min-width: 0;
+}
+.task-main .task-checklist-panel {
+  margin-top: 18px;
+}
+@media (max-width: 980px) {
+  .task-area {
+    grid-template-columns: 1fr;
+  }
+}

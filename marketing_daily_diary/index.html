@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20261030-8" />
+    <link rel="stylesheet" href="styles.css?v=20261030-9" />
   </head>
   <body>
     <main class="dashboard">
@@ -30,6 +30,7 @@
 
       <section class="workspace">
         <section class="task-area" aria-label="업무 체크리스트">
+          <div class="task-main">
           <div class="section-head">
             <div><p class="eyebrow">Checklist</p><h2 id="taskDateLabel">오늘 할일</h2></div>
             <div class="filters" role="group" aria-label="업무 필터">
@@ -49,7 +50,6 @@
           </form>
           <div id="taskList" class="task-list" aria-live="polite"></div>
 
-          <section class="task-support-grid" aria-label="체크리스트와 예정 할 일">
             <section class="memo-check-panel task-checklist-panel" aria-label="체크리스트">
               <div class="memo-check-head">
                 <div>
@@ -64,6 +64,7 @@
               </form>
               <ul id="memoCheckList" class="memo-check-list" aria-live="polite"></ul>
             </section>
+          </div>
 
             <section class="upcoming-panel" aria-label="이번 주와 다음 주 할 일">
               <div class="memo-check-head">
@@ -83,7 +84,6 @@
                 </section>
               </div>
             </section>
-          </section>
         </section>
 
         <aside class="monthly-progress-panel" aria-label="월별 진행된 일 목록">
