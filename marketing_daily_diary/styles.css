@@ -1946,3 +1946,138 @@ body {
 .monthly-progress-list .empty {
   padding: 10px 0;
 }
+
+/* task-and-checklist-simple */
+.task-area .filters,
+.task-area .task-date-tabs {
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.task-area .filter,
+.task-area .date-tab,
+.task-area .filter.is-active,
+.task-area .date-tab.is-active {
+  min-height: 0;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-weight: 800;
+}
+.task-area .filter.is-active,
+.task-area .date-tab.is-active {
+  color: #202124;
+  box-shadow: inset 0 -2px 0 #202124;
+}
+.task-area .task-date-tabs input[type="date"] {
+  min-height: 28px;
+  border: 0;
+  border-bottom: 1px solid #d9d9d9;
+  border-radius: 0;
+  color: var(--muted);
+}
+.task-area .task-form input,
+.task-area .memo-check-form input,
+.task-area .memo-check-form select {
+  min-height: 36px;
+  border: 0;
+  border-bottom: 1px solid #d9d9d9;
+  border-radius: 0;
+  background: transparent;
+  padding: 0 4px;
+}
+.task-area .task-form input:focus,
+.task-area .memo-check-form input:focus,
+.task-area .memo-check-form select:focus {
+  outline: none;
+  border-bottom-color: #202124;
+}
+.task-area .task-form button,
+.task-area .memo-check-form button {
+  min-height: 32px;
+  border: 1px solid #202124;
+  border-radius: 0;
+  background: transparent;
+  color: #202124;
+  font-weight: 800;
+}
+.task-area .task-form button:hover,
+.task-area .memo-check-form button:hover {
+  background: #202124;
+  color: #fff;
+}
+.task-area .task-list {
+  gap: 0;
+}
+.task-area .task-item,
+.task-area .memo-check-item {
+  min-height: 0;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid #ececec;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.task-area .task-item:hover,
+.task-area .memo-check-item:hover {
+  background: #fafaf7;
+}
+.task-area .memo-check-list {
+  gap: 0;
+  border: 0;
+}
+.task-area .check::before,
+.task-area .memo-toggle::before {
+  border-color: #b5b5b5;
+}
+.task-area .is-done .check::before,
+.task-area .memo-check-item.is-done .memo-toggle::before {
+  border-color: #5fae48;
+  background: #b9e7a8;
+}
+.task-area .task-item {
+  grid-template-columns: 28px minmax(0, 1fr) 20px;
+}
+.task-area .memo-date {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.task-area .delete-button,
+.task-area .memo-remove {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9a9a9a;
+  opacity: 0;
+}
+.task-area .task-item:hover .delete-button,
+.task-area .memo-check-item:hover .memo-remove,
+.task-area .delete-button:focus-visible,
+.task-area .memo-remove:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .task-area .delete-button,
+  .task-area .memo-remove {
+    opacity: 1;
+  }
+}
+.task-area .empty {
+  padding: 8px 0;
+}
+.task-area .is-done .check,
+.task-area .memo-check-item.is-done .memo-toggle {
+  background: transparent;
+}
