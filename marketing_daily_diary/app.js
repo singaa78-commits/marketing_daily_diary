@@ -396,7 +396,12 @@ function renderMonthlyProgress() {
     return `<button type="button" class="monthly-tab ${isActive ? "is-active" : ""}" data-progress-month="${month}" aria-pressed="${isActive}">${formatMonthLabel(month)}</button>`;
   }).join("");
   const visibleItems = completedItems.filter((item) => (item.completedMonth || monthFromWhen(item.when) || baseMonth) === activeProgressMonth);
-  monthlyProgressList.innerHTML = visibleItems.length ? visibleItems.map((item) => `<li><span class="progress-check">✓</span><strong>${item.text}</strong><small>${item.completedAt || item.when || "완료"}</small></li>`).join("") : `<li class="empty">해당 월에 완료 체크된 항목이 없습니다.</li>`;
+  monthlyProgressList.innerHTML = visibleItems.length ? visibleItems.map((item) => `<li><span class="progress-check">✓</span><strong>${item.text}</strong><small>${formatProgressDate(item.completedAt) || item.when || "완료"}</small></li>`).join("") : `<li class="empty">해당 월에 완료 체크된 항목이 없습니다.</li>`;
+}
+
+function formatProgressDate(value) {
+  const match = /^\d{4}-(\d{2})-(\d{2})/.exec(value || "");
+  return match ? `${Number(match[1])}/${Number(match[2])}` : "";
 }
 
 function formatMonthKey(date) {
@@ -689,7 +694,7 @@ function renderWeekCalendar() {
   grid.innerHTML = days.map((dateItem) => {
     const dateKey = formatDateKey(dateItem);
     const dateEvents = eventsForDate(dateKey);
-    const minHeight = Math.max(300, 88 + dateEvents.length * 128);
+    const minHeight = Math.max(220, 72 + dateEvents.length * 30);
     return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""}" data-date="${dateKey}" style="min-height: ${minHeight}px;">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${formatShortDate(dateItem)}</span><span class="day-weekday">${formatWeekday(dateItem)}</span></div>${renderEvents(dateEvents, Infinity)}</article>`;
   }).join("");
 }
@@ -709,7 +714,7 @@ function renderMonthCalendar() {
   grid.innerHTML = days.map((dateItem) => {
     const muted = dateItem.getMonth() !== month;
     const dateKey = formatDateKey(dateItem);
-    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}" data-date="${dateKey}">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${dateItem.getDate()}</span></div>${renderEvents(eventsForDate(dateKey), 2)}</article>`;
+    return `<article class="day-card ${isSameDate(dateItem, baseToday) ? "is-today" : ""} ${muted ? "is-muted" : ""}" data-date="${dateKey}">${hasWorkLog(dateKey) ? `<span class="worklog-dot" title="업무일지 있음"></span>` : ""}<div class="day-name"><span>${dateItem.getDate()}</span></div>${renderEvents(eventsForDate(dateKey), 4)}</article>`;
   }).join("");
 }
 
@@ -719,12 +724,12 @@ function renderEvents(events, limit = 4) {
   const hiddenCount = events.length - visible.length;
   return `${visible.map((event) => {
     const key = eventKey(event);
-    return `<div class="event kind-${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-top"><div><strong>${event.title}</strong><span>${event.time} · ${eventKindLabels[event.kind] || "일정"}</span></div><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div></div>`;
+    return `<div class="event kind-${event.kind}" role="button" tabindex="0" data-event-edit="${event.id || key}" aria-label="${event.title} 일정 수정"><div class="event-line"><span class="event-dot" title="${eventKindLabels[event.kind] || "일정"}"></span><span class="event-time">${event.time}</span><strong>${event.title}</strong><button class="event-remove" type="button" aria-label="${event.title} 일정 삭제" data-event-delete="${event.id || key}">×</button></div></div>`;
   }).join("")}${hiddenCount > 0 ? `<p class="empty">외 ${hiddenCount}건</p>` : ""}`;
 }
 
 function eventKey(event) { return `${event.date}|${event.time}|${event.title}`; }
-function eventsForDate(dateKey) { return calendarEvents.filter((event) => event.date === dateKey); }
+function eventsForDate(dateKey) { return calendarEvents.filter((event) => event.date === dateKey).sort((first, second) => (first.time || "").localeCompare(second.time || "")); }
 function startOfWeek(date) { const result = new Date(date); result.setDate(result.getDate() - result.getDay()); return result; }
 function addDays(date, days) { const result = new Date(date); result.setDate(result.getDate() + days); return result; }
 function formatDateKey(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }

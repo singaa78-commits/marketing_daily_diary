@@ -1839,3 +1839,110 @@ body {
 .upcoming-item strong {
   font-size: 0.92rem;
 }
+
+/* calendar-simple-events (matches upcoming list) */
+.calendar-grid .event,
+.calendar-grid.week-view .event,
+.month-view .event {
+  margin: 0;
+  padding: 3px 4px;
+  border: 0;
+  background: transparent;
+}
+.calendar-grid .event:hover {
+  background: #f7f7f5;
+}
+.event-line {
+  display: grid;
+  grid-template-columns: 8px auto minmax(0, 1fr) 18px;
+  gap: 6px;
+  align-items: center;
+}
+.event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8fcf78;
+}
+.event.kind-meeting .event-dot { background: #f2cf2e; }
+.event.kind-check .event-dot { background: #7fb3f0; }
+.event.kind-schedule .event-dot { background: #8fcf78; }
+.event.kind-deadline .event-dot { background: #ee7fa0; }
+.event.kind-review .event-dot { background: #6fc9b5; }
+.calendar-grid .event-time {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.calendar-grid .event strong {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.month-view .event strong {
+  font-size: 0.8rem;
+}
+.month-view .event-time {
+  font-size: 0.72rem;
+}
+.calendar-grid .event-remove {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+}
+
+/* monthly-progress-simple */
+.monthly-progress-current {
+  display: none;
+}
+.monthly-progress-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #ececec;
+  margin-bottom: 4px;
+}
+.monthly-tab,
+.monthly-tab.is-active {
+  min-width: 0;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-weight: 800;
+}
+.monthly-tab + .monthly-tab {
+  border-left: 0;
+}
+.monthly-tab.is-active {
+  color: #202124;
+  box-shadow: inset 0 -2px 0 #202124;
+}
+.monthly-progress-list {
+  gap: 0;
+}
+.monthly-progress-list li:not(.empty) {
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid #ececec;
+  background: transparent;
+}
+.progress-check {
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+  color: #5fae48;
+}
+.monthly-progress-list small {
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.monthly-progress-list .empty {
+  padding: 10px 0;
+}
