@@ -2137,3 +2137,97 @@ section:not(.identity) > .section-head .eyebrow,
 .section-head .eyebrow {
   display: none;
 }
+
+/* calendar-header-redesign */
+.calendar-area .calendar-actions,
+.calendar-area .month-controls {
+  gap: 10px;
+}
+.calendar-area .view-toggle {
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #dcdcdc;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: none;
+}
+.calendar-area .view-button,
+.calendar-area .view-button.is-active {
+  min-height: 34px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  color: #555;
+  font-weight: 700;
+}
+.calendar-area .view-button.is-active {
+  background: #f6efc4;
+  color: #202124;
+  font-weight: 900;
+}
+.calendar-area .icon-button,
+.calendar-area .calendar-actions .ghost-button {
+  min-height: 44px;
+  border: 1px solid #dcdcdc;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  color: #202124;
+  font-weight: 800;
+}
+.calendar-area .icon-button {
+  width: 44px;
+  font-size: 1.1rem;
+}
+.calendar-area .calendar-actions .ghost-button {
+  padding: 0 20px;
+}
+.calendar-area .icon-button:hover,
+.calendar-area .calendar-actions .ghost-button:hover {
+  border-color: #202124;
+}
+.calendar-area .event-form {
+  gap: 10px;
+  margin: 22px 0 18px;
+}
+.calendar-area .event-form input,
+.calendar-area .event-form select {
+  min-height: 48px;
+  border: 1px solid #dcdcdc;
+  border-radius: 0;
+  background: #fff;
+  padding: 0 14px;
+}
+.calendar-area .event-form input:focus,
+.calendar-area .event-form select:focus {
+  outline: none;
+  border-color: #202124;
+}
+.calendar-area .event-form button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: #2b2b2b;
+  color: #fff;
+  font-weight: 900;
+  box-shadow: none;
+}
+.calendar-area .event-form button:hover {
+  background: #000;
+}
+.calendar-area .event-form .ghost-button {
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  color: #202124;
+}
+.calendar-area .event-form {
+  grid-template-columns: minmax(180px, 1fr) 180px 150px 150px 120px 72px;
+}
+@media (max-width: 980px) {
+  .calendar-area .event-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .calendar-area .event-form { grid-template-columns: 1fr; }
+}
