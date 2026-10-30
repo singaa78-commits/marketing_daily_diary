@@ -2100,3 +2100,29 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* task-block-and-schedule-split */
+.workspace > .task-area {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.task-main,
+.task-area > .upcoming-panel {
+  padding: 20px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+}
+.task-main .task-checklist-panel {
+  margin-top: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.task-area > .upcoming-panel .memo-check-head {
+  margin-bottom: 20px;
+}
+.task-area > .upcoming-panel .upcoming-columns {
+  gap: 28px;
+}
