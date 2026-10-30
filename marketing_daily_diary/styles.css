@@ -2126,3 +2126,14 @@ body {
 .task-area > .upcoming-panel .upcoming-columns {
   gap: 28px;
 }
+
+/* section-title-sizes */
+h2 {
+  font-size: 20px;
+}
+section:not(.identity) > .section-head .eyebrow,
+.memo-check-head .eyebrow,
+.monthly-progress-head .eyebrow,
+.section-head .eyebrow {
+  display: none;
+}
