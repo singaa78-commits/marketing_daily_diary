@@ -359,9 +359,19 @@ function renderUpcomingWork() {
 
 function renderUpcomingItems(events, emptyText) {
   if (!events.length) return `<li class="empty">${emptyText}</li>`;
-  return events
-    .map((event) => `<li class="upcoming-item"><span class="upcoming-kind kind-${event.kind}">${eventKindLabels[event.kind] || "일정"}</span><strong>${event.title}</strong><small>${formatShortDate(new Date(`${event.date}T00:00:00`))} ${event.time}</small></li>`)
-    .join("");
+  const todayKey = formatDateKey(baseToday);
+  const dates = [...new Set(events.map((event) => event.date))];
+  return dates.map((dateKey) => {
+    const dateItem = new Date(`${dateKey}T00:00:00`);
+    const state = dateKey < todayKey ? " is-past" : dateKey === todayKey ? " is-today" : "";
+    const items = events.filter((event) => event.date === dateKey).map((event) => `
+      <li class="upcoming-item">
+        <span class="upcoming-dot kind-${event.kind}" title="${eventKindLabels[event.kind] || "일정"}"></span>
+        <span class="upcoming-time">${event.time}</span>
+        <strong>${event.title}</strong>
+      </li>`).join("");
+    return `<li class="upcoming-day${state}"><p class="upcoming-date">${formatShortDate(dateItem)} ${formatWeekday(dateItem)}${state === " is-today" ? " · 오늘" : ""}</p><ul>${items}</ul></li>`;
+  }).join("");
 }
 
 function getEventsInRange(start, end) {

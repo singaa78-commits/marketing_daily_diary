@@ -1741,7 +1741,7 @@ body {
 .calendar-grid .event {
   border: 0;
   border-left: 3px solid #b9e7a8;
-  background: #f7f7f5;
+  background: #fffdf0;
 }
 .calendar-grid .event.kind-check { border-left-color: #b7d7ff; }
 .calendar-grid .event.kind-schedule { border-left-color: #b9e7a8; }
@@ -1749,7 +1749,7 @@ body {
 .calendar-grid .event.kind-meeting { border-left-color: #ffe66d; }
 .calendar-grid .event.kind-review { border-left-color: #9edfd0; }
 .calendar-grid .event:hover {
-  background: #fffdf0;
+  background: #f7f7f5;
 }
 .calendar-grid .event-remove {
   border: 0;
@@ -1769,4 +1769,73 @@ body {
   .calendar-grid .event-remove {
     opacity: 1;
   }
+}
+
+/* upcoming-clean-list */
+.upcoming-columns {
+  gap: 20px;
+}
+.upcoming-columns h3 {
+  margin: 0 0 4px;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 2px solid #202124;
+  background: transparent;
+  font-size: 1.05rem;
+}
+.upcoming-list {
+  gap: 0;
+}
+.upcoming-day {
+  padding: 8px 0;
+  border-bottom: 1px solid #ececec;
+}
+.upcoming-day:last-child {
+  border-bottom: 0;
+}
+.upcoming-date {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.upcoming-day.is-today .upcoming-date {
+  color: #202124;
+}
+.upcoming-day.is-past {
+  opacity: 0.45;
+}
+.upcoming-day ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.upcoming-item {
+  grid-template-columns: 8px 3.2em minmax(0, 1fr);
+  gap: 8px;
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+}
+.upcoming-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b9e7a8;
+}
+.upcoming-dot.kind-meeting { background: #f2cf2e; }
+.upcoming-dot.kind-check { background: #7fb3f0; }
+.upcoming-dot.kind-schedule { background: #8fcf78; }
+.upcoming-dot.kind-deadline { background: #ee7fa0; }
+.upcoming-dot.kind-review { background: #6fc9b5; }
+.upcoming-time {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.upcoming-item strong {
+  font-size: 0.92rem;
 }
