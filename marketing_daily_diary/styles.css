@@ -2231,3 +2231,33 @@ section:not(.identity) > .section-head .eyebrow,
 @media (max-width: 640px) {
   .calendar-area .event-form { grid-template-columns: 1fr; }
 }
+
+/* aligned-block-headers */
+.monthly-progress-panel {
+  padding: 20px;
+}
+.task-main > .section-head,
+.task-checklist-panel .memo-check-head,
+.upcoming-panel > .memo-check-head,
+.monthly-progress-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 40px;
+  margin: 0 0 16px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #202124;
+}
+.task-main > .section-head h2,
+.task-checklist-panel .memo-check-head h2,
+.upcoming-panel > .memo-check-head h2,
+.monthly-progress-head h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+.task-main > .section-head .filters {
+  margin-bottom: -4px;
+}
